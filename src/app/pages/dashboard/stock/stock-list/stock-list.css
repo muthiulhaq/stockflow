@@ -2,10 +2,59 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.toolbar h2 {
+  margin: 0;
+  font-size: 1.4rem;
 }
 
 :host ::ng-deep .p-tag {
   min-width: 110px;
   justify-content: center;
+}
+
+/* Dialog */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.field.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-field {
+  justify-content: center;
+}
+
+/* Validation */
+
+.error {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--red-500);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
