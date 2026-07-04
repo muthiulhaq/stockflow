@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { StockService } from '../../../../core/services/stock.service';
 
 interface StockItem {
   id: number;
@@ -60,11 +61,12 @@ export class StockListComponent {
   adjustmentForm!: FormGroup;
   showAddStockDialog: boolean = false;
   showAdjustmentDialog = false;
-showHistoryDialog = false;
+  showHistoryDialog = false;
 
-selectedProductName = '';
+  loading = false;
+  selectedProductName = '';
 
-stockHistory: StockHistory[] = [];
+  stockHistory: StockHistory[] = [];
 
   products = [
     { id: 1, name: 'Rice' },
@@ -86,7 +88,10 @@ stockHistory: StockHistory[] = [];
     { label: 'Other', value: 'OTHER' },
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private stockService: StockService
+  ) {}
 
 ngOnInit(): void {
   this.loadStocks();
@@ -213,67 +218,44 @@ ngOnInit(): void {
 
   this.selectedProductName = stock.productName;
 
-  this.stockHistory = [
-    {
-      date: new Date(),
-      transactionType: 'Purchase',
-      quantity: 50,
-      beforeStock: 0,
-      afterStock: 50,
-      referenceNo: 'PO-1001',
-      remarks: 'Initial Purchase'
-    },
-    {
-      date: new Date(),
-      transactionType: 'Sale',
-      quantity: -5,
-      beforeStock: 50,
-      afterStock: 45,
-      referenceNo: 'INV-2001',
-      remarks: 'Retail Sale'
-    },
-    {
-      date: new Date(),
-      transactionType: 'Adjustment',
-      quantity: -2,
-      beforeStock: 45,
-      afterStock: 43,
-      referenceNo: 'ADJ-001',
-      remarks: 'Damaged Items'
-    }
-  ];
+  this.stockHistory = [];
 
   this.showHistoryDialog = true;
 }
 
 
   loadStocks(): void {
-    this.stocks = [
-      {
-        id: 1,
-        productCode: 'P001',
-        productName: 'Rice',
-        category: 'Food',
-        currentStock: 50,
-        unit: 'KG',
-        reorderLevel: 10,
-        costPrice: 60,
-        sellingPrice: 75,
-        lastUpdated: new Date(),
+    this.loading = true;
+
+    this.stockService.getStocks().subscribe({
+      next: ({ data, error }) => {
+        this.loading = false;
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+debugger;
+        // Map Supabase data to StockItem interface
+        this.stocks = (data ?? []).map((item: any) => ({
+          id: item.id,
+          productCode: item.code || '-',
+          productName: item.name,
+          category: item.category || '-',
+          currentStock: item.current_stock || 0,
+          unit: item.unit || 'KG',
+          reorderLevel: item.minimum_stock || 0,
+          costPrice: item.cost_price || 0,
+          sellingPrice: item.selling_price || 0,
+          lastUpdated: new Date(item.updated_at || item.created_at),
+        }));
       },
-      {
-        id: 2,
-        productCode: 'P002',
-        productName: 'Sugar',
-        category: 'Food',
-        currentStock: 5,
-        unit: 'KG',
-        reorderLevel: 10,
-        costPrice: 40,
-        sellingPrice: 50,
-        lastUpdated: new Date(),
+
+      error: (err) => {
+        this.loading = false;
+        console.error(err);
       },
-    ];
+    });
   }
 
   getStockValue(stock: StockItem): number {
