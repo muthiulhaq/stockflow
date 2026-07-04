@@ -1,0 +1,336 @@
+<div class="card">
+  <div class="toolbar">
+    <h2>Current Stock</h2>
+
+    <button pButton (click)="openAddStock()" label="Add Stock" icon="pi pi-plus"></button>
+  </div>
+
+  <p-table
+    [value]="stocks"
+    [paginator]="true"
+    [rows]="10"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Code</th>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Qty</th>
+        <th>Unit</th>
+        <th>Reorder</th>
+        <th>Cost</th>
+        <th>Sale</th>
+        <th>Value</th>
+        <th>Status</th>
+        <th>Updated</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-stock>
+      <tr>
+        <td>{{ stock.productCode }}</td>
+
+        <td>{{ stock.productName }}</td>
+
+        <td>{{ stock.category }}</td>
+
+        <td>{{ stock.currentStock }}</td>
+
+        <td>{{ stock.unit }}</td>
+
+        <td>{{ stock.reorderLevel }}</td>
+
+        <td>{{ stock.costPrice | currency: 'INR' }}</td>
+
+        <td>{{ stock.sellingPrice | currency: 'INR' }}</td>
+
+        <td>{{ getStockValue(stock) | currency: 'INR' }}</td>
+
+        <td>
+          <p-tag [value]="getStatus(stock)" [severity]="getSeverity(stock)"> </p-tag>
+        </td>
+
+        <td>
+          {{ stock.lastUpdated | date: 'dd-MMM-yyyy' }}
+        </td>
+
+        <td>
+          
+          <button
+            pButton
+            icon="pi pi-pencil"
+            severity="warn"
+            (click)="openAdjustmentDialog(stock)"
+          ></button>
+
+         <button
+  pButton
+  icon="pi pi-history"
+  severity="info"
+  [text]="true"
+  (click)="openHistoryDialog(stock)">
+</button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!------Add stock form------>
+<p-dialog
+  header="Add Stock"
+  [(visible)]="showAddStockDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+>
+  <form [formGroup]="stockForm">
+    <div class="form-grid">
+      <!-- Product -->
+      <div class="field">
+        <label>Product *</label>
+
+        <p-select
+          [options]="products"
+          optionLabel="name"
+          optionValue="id"
+          formControlName="productId"
+          placeholder="Select Product"
+        >
+        </p-select>
+
+        @if (stockForm.get('productId')?.invalid && stockForm.get('productId')?.touched) {
+          <small class="error"> Product is required </small>
+        }
+      </div>
+
+      <!-- Quantity -->
+      <div class="field">
+        <label>Quantity *</label>
+
+        <p-inputNumber formControlName="quantity" [min]="1"> </p-inputNumber>
+
+        @if (stockForm.get('quantity')?.invalid && stockForm.get('quantity')?.touched) {
+          <small class="error"> Quantity must be greater than 0 </small>
+        }
+      </div>
+
+      <!-- Unit Cost -->
+      <div class="field">
+        <label>Unit Cost</label>
+
+        <p-inputNumber formControlName="unitCost" mode="currency" currency="INR"> </p-inputNumber>
+      </div>
+
+      <!-- Date -->
+      <div class="field">
+        <label>Date *</label>
+
+        <p-datepicker formControlName="date"> </p-datepicker>
+      </div>
+
+      <!-- Reference -->
+      <div class="field full-width">
+        <label>Reference No</label>
+
+        <input pInputText formControlName="referenceNo" />
+      </div>
+
+      <!-- Remarks -->
+      <div class="field full-width">
+        <label>Remarks</label>
+
+        <textarea pInputTextarea rows="3" formControlName="remarks"> </textarea>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      severity="secondary"
+      (click)="showAddStockDialog = false"
+    ></button>
+
+    <button
+      pButton
+      label="Save Stock"
+      icon="pi pi-check"
+      [disabled]="stockForm.invalid"
+      (click)="saveStock()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-------Stock adjust form-------->
+<p-dialog
+  header="Stock Adjustment"
+  [(visible)]="showAdjustmentDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+>
+  <form [formGroup]="adjustmentForm">
+    <div class="form-grid">
+      <!-- Current Stock -->
+
+      <div class="field">
+        <label>Current Stock</label>
+
+        <input pInputText formControlName="currentStock" readonly />
+      </div>
+
+      <!-- Adjustment Type -->
+
+      <div class="field">
+        <label>Adjustment Type *</label>
+
+        <p-select
+          [options]="adjustmentTypes"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="adjustmentType"
+        >
+        </p-select>
+      </div>
+
+      <!-- Quantity -->
+
+      <div class="field">
+        <label>Quantity *</label>
+
+        <p-inputNumber formControlName="quantity" [min]="1"> </p-inputNumber>
+      </div>
+
+      <!-- Reason -->
+
+      <div class="field">
+        <label>Reason *</label>
+
+        <p-select
+          [options]="adjustmentReasons"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="reason"
+        >
+        </p-select>
+      </div>
+
+      <!-- Date -->
+
+      <div class="field">
+        <label>Date *</label>
+
+        <p-datepicker formControlName="transactionDate"> </p-datepicker>
+      </div>
+
+      <!-- New Stock Preview -->
+
+      <div class="field">
+        <label>New Stock</label>
+
+        <input pInputText [value]="calculateNewStock()" readonly />
+      </div>
+
+      <!-- Remarks -->
+
+      <div class="field full-width">
+        <label>Remarks</label>
+
+        <textarea pInputTextarea rows="3" formControlName="remarks"> </textarea>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancel"
+      severity="secondary"
+      (click)="showAdjustmentDialog = false"
+    ></button>
+
+    <button
+      pButton
+      label="Save Adjustment"
+      icon="pi pi-check"
+      severity="warn"
+      (click)="saveAdjustment()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+
+<!--------------------Stock History--------------->
+<p-dialog
+  [header]="'Stock History - ' + selectedProductName"
+  [(visible)]="showHistoryDialog"
+  [modal]="true"
+  [style]="{ width: '900px' }">
+
+  <p-table
+    [value]="stockHistory"
+    styleClass="p-datatable-sm">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Qty</th>
+        <th>Before</th>
+        <th>After</th>
+        <th>Reference</th>
+        <th>Remarks</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+
+        <td>
+          {{ row.date | date:'dd-MMM-yyyy' }}
+        </td>
+
+        <td>
+          {{ row.transactionType }}
+        </td>
+
+        <td>
+          {{ row.quantity }}
+        </td>
+
+        <td>
+          {{ row.beforeStock }}
+        </td>
+
+        <td>
+          {{ row.afterStock }}
+        </td>
+
+        <td>
+          {{ row.referenceNo }}
+        </td>
+
+        <td>
+          {{ row.remarks }}
+        </td>
+
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+  <ng-template pTemplate="footer">
+
+    <button
+      pButton
+      label="Close"
+      severity="secondary"
+      (click)="showHistoryDialog = false">
+    </button>
+
+  </ng-template>
+
+</p-dialog>

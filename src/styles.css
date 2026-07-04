@@ -1,1 +1,34 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeflex/primeflex.scss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "primeicons/primeicons.css";
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0px !important;
+  background-color: #e8fbef !important;
+}
+
+.p-card {
+  background-color: #384049 !important;
+  margin: 1rem;
+}
+
+.p-inputtext {
+  background-color: #454749 !important;
+}
+
+.p-button-success
+ {
+    background: #2aaa8c !important;
+    border: 1px solid #46b79d !important;
+    color: #ffffff !important;
+}
+
+.p-datatable {
+  background-color: #384049 !important;
+}
+
+.toolbar h2 {
+  color: #384049;
+}

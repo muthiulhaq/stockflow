@@ -1,0 +1,134 @@
+<p-card header="New Sale">
+
+  <form [formGroup]="salesForm">
+
+    <div class="grid">
+
+      <div class="col-12 md:col-6">
+        <label class="block mb-2 font-semibold">
+          Customer Name
+        </label>
+
+        <input
+          pInputText
+          class="w-full"
+          placeholder="Enter customer name"
+          formControlName="customerName" />
+      </div>
+
+      <div class="col-12 md:col-6">
+        <label class="block mb-2 font-semibold">
+          Phone Number
+        </label>
+
+        <input
+          pInputText
+          class="w-full"
+          placeholder="Enter phone number"
+          formControlName="customerPhone" />
+      </div>
+
+    </div>
+
+    <div class="flex justify-content-between align-items-center mt-4 mb-3">
+      <h3 class="m-0">Items</h3>
+
+      <p-button
+        label="Add Item"
+        icon="pi pi-plus"
+        severity="success"
+        (onClick)="addItem()">
+      </p-button>
+    </div>
+
+    <div formArrayName="items">
+
+      @for(item of items.controls; track $index) {
+
+      <div
+        [formGroupName]="$index"
+        class="item-row">
+
+        <div>
+          <label class="block mb-2">Item Name</label>
+
+          <input
+            pInputText
+            class="w-full"
+            placeholder="Item name"
+            formControlName="itemName" />
+        </div>
+
+        <div>
+          <label class="block mb-2">Qty</label>
+
+          <p-inputNumber
+            formControlName="quantity"
+            [min]="1"
+            inputStyleClass="w-full">
+          </p-inputNumber>
+        </div>
+
+        <div>
+          <label class="block mb-2">Unit Price</label>
+
+          <p-inputNumber
+            formControlName="unitPrice"
+            [min]="0"
+            inputStyleClass="w-full">
+          </p-inputNumber>
+        </div>
+
+        <div class="subtotal-box">
+          <label class="block mb-2">Subtotal</label>
+
+          <div class="subtotal">
+            ₹ {{ getSubtotal($index) }}
+          </div>
+        </div>
+
+        <div class="delete-box">
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            (onClick)="removeItem($index)">
+          </p-button>
+        </div>
+
+      </div>
+
+      }
+
+    </div>
+
+    <div class="mt-4">
+      <label class="block mb-2 font-semibold">
+        Notes
+      </label>
+
+      <textarea
+        pInputTextarea
+        rows="3"
+        class="w-full"
+        formControlName="notes">
+      </textarea>
+    </div>
+
+    <div class="grand-total">
+      Grand Total: ₹ {{ grandTotal }}
+    </div>
+
+    <div class="mt-4">
+      <p-button
+        label="Save Sale"
+        icon="pi pi-save"
+        severity="success"
+        styleClass="w-full"
+        (onClick)="saveSale()">
+      </p-button>
+    </div>
+
+  </form>
+
+</p-card>

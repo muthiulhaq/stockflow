@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+/* Card */
+
+.card {
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* Toolbar */
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.toolbar h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.toolbar small {
+  color: var(--text-color-secondary);
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.toolbar-right input {
+  width: 260px;
+}
+
+/* Table */
+
+:host ::ng-deep .p-datatable {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable th {
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-datatable td {
+  vertical-align: middle;
+}
+
+/* Buttons */
+
+.action-buttons {
+  display: flex;
+  gap: .5rem;
+}
+
+/* Dialog */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: .5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: .5rem;
+  font-weight: 600;
+}
+
+.checkbox-field {
+  justify-content: center;
+}
+
+/* Validation */
+
+.p-error {
+  margin-top: .4rem;
+  font-size: .8rem;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .toolbar-right input,
+  .toolbar-right button {
+    width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

@@ -1,0 +1,11 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+:host ::ng-deep .p-tag {
+  min-width: 110px;
+  justify-content: center;
+}

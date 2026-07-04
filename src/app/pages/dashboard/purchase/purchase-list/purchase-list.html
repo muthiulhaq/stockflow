@@ -1,0 +1,264 @@
+<div class="card">
+
+  <div class="toolbar">
+
+    <h2>Purchases</h2>
+
+    <button
+      pButton
+      label="New Purchase"
+      icon="pi pi-plus"
+      (click)="openPurchaseDialog()">
+    </button>
+
+  </div>
+
+  <p-table
+    [value]="purchases"
+    [paginator]="true"
+    [rows]="10"
+    styleClass="p-datatable-sm">
+
+    <ng-template pTemplate="header">
+
+      <tr>
+        <th>PO No</th>
+        <th>Supplier</th>
+        <th>Date</th>
+        <th>Total Amount</th>
+        <th>Items</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+
+    </ng-template>
+
+    <ng-template pTemplate="body" let-purchase>
+
+      <tr>
+
+        <td>{{ purchase.purchaseNo }}</td>
+
+        <td>{{ purchase.supplierName }}</td>
+
+        <td>
+          {{ purchase.purchaseDate | date:'dd-MMM-yyyy' }}
+        </td>
+
+        <td>
+          {{ purchase.totalAmount | currency:'INR' }}
+        </td>
+
+        <td>{{ purchase.itemCount }}</td>
+
+        <td>
+          <p-tag
+            [value]="purchase.status"
+            [severity]="getSeverity(purchase.status)">
+          </p-tag>
+        </td>
+
+        <td>
+
+          <button
+            pButton
+            icon="pi pi-pencil"
+            severity="warn"
+            [text]="true"
+            (click)="editPurchase(purchase)">
+          </button>
+
+          <button
+            pButton
+            icon="pi pi-eye"
+            severity="info"
+            [text]="true">
+          </button>
+
+        </td>
+
+      </tr>
+
+    </ng-template>
+
+  </p-table>
+
+  <!-------Add Purchase Dialog and Form------->
+  <p-dialog
+  header="Purchase Entry"
+  [(visible)]="showPurchaseDialog"
+  [modal]="true"
+  [maximizable]="true"
+  [style]="{ width: '90vw' }">
+
+  <!-- Purchase Header -->
+
+  <form [formGroup]="purchaseForm">
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Purchase No</label>
+        <input
+          pInputText
+          formControlName="purchaseNo"
+          readonly />
+      </div>
+
+      <div class="field">
+        <label>Supplier *</label>
+
+        <p-select
+          [options]="suppliers"
+          optionLabel="name"
+          optionValue="id"
+          formControlName="supplierId"
+          placeholder="Select Supplier">
+        </p-select>
+      </div>
+
+      <div class="field">
+        <label>Purchase Date</label>
+
+        <p-datepicker
+          formControlName="purchaseDate">
+        </p-datepicker>
+      </div>
+
+      <div class="field">
+        <label>Invoice No</label>
+
+        <input
+          pInputText
+          formControlName="invoiceNo" />
+      </div>
+
+    </div>
+
+  </form>
+
+  <hr>
+
+  <!-- Add Item -->
+
+  <div class="item-grid">
+
+    <p-select
+      [options]="products"
+      optionLabel="name"
+      optionValue="id"
+      [(ngModel)]="selectedProductId"
+      placeholder="Product">
+    </p-select>
+
+    <p-inputNumber
+      [(ngModel)]="itemQty"
+      [min]="1">
+    </p-inputNumber>
+
+    <p-inputNumber
+      [(ngModel)]="itemCostPrice"
+      mode="currency"
+      currency="INR">
+    </p-inputNumber>
+
+    <button
+      pButton
+      icon="pi pi-plus"
+      label="Add"
+      (click)="addItem()">
+    </button>
+
+  </div>
+
+  <br>
+
+  <!-- Items Grid -->
+
+  <p-table
+    [value]="purchaseItems"
+    styleClass="p-datatable-sm">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Cost</th>
+        <th>Amount</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+
+      <tr>
+
+        <td>{{ item.productName }}</td>
+
+        <td>{{ item.quantity }}</td>
+
+        <td>{{ item.costPrice | currency:'INR' }}</td>
+
+        <td>{{ item.amount | currency:'INR' }}</td>
+
+        <td>
+
+          <button
+            pButton
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            (click)="removeItem(rowIndex)">
+          </button>
+
+        </td>
+
+      </tr>
+
+    </ng-template>
+
+  </p-table>
+
+  <br>
+
+  <!-- Summary -->
+
+  <div class="summary">
+
+    <div>
+      Total Items:
+      <strong>{{ purchaseItems.length }}</strong>
+    </div>
+
+    <div>
+      Total Qty:
+      <strong>{{ getTotalQuantity() }}</strong>
+    </div>
+
+    <div>
+      Grand Total:
+      <strong>{{ getGrandTotal() | currency:'INR' }}</strong>
+    </div>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+
+    <button
+      pButton
+      label="Cancel"
+      severity="secondary"
+      (click)="showPurchaseDialog = false">
+    </button>
+
+    <button
+      pButton
+      label="Save Purchase"
+      icon="pi pi-check"
+      (click)="savePurchase()">
+    </button>
+
+  </ng-template>
+
+</p-dialog>
+</div>

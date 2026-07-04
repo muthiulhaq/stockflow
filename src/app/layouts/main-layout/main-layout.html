@@ -1,0 +1,81 @@
+<div class="layout">
+
+  <!-- ================= MOBILE HEADER ================= -->
+  <header class="mobile-header">
+
+    <p-button
+      icon="pi pi-bars"
+      [text]="true"
+      aria-label="Open menu"
+      (onClick)="sidebarVisible = true">
+    </p-button>
+
+    <div class="logo">
+      StockFlow
+    </div>
+
+  </header>
+
+  <!-- ================= MOBILE DRAWER ================= -->
+  <p-drawer
+    [(visible)]="sidebarVisible"
+    position="left">
+
+    <div class="sidebar-logo">
+      StockFlow
+    </div>
+
+    <nav class="mobile-menu">
+
+      @for (menu of menus; track menu.label) {
+
+        <a
+          [routerLink]="menu.route"
+          routerLinkActive="active"
+          class="menu-item"
+          (click)="sidebarVisible = false">
+
+          <i [class]="menu.icon"></i>
+          <span>{{ menu.label }}</span>
+
+        </a>
+
+      }
+
+    </nav>
+
+  </p-drawer>
+
+  <!-- ================= DESKTOP SIDEBAR ================= -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      StockFlow
+    </div>
+
+    <nav class="desktop-menu">
+
+      @for (menu of menus; track menu.label) {
+
+        <a
+          [routerLink]="menu.route"
+          routerLinkActive="active"
+          class="menu-item">
+
+          <i [class]="menu.icon"></i>
+          <span>{{ menu.label }}</span>
+
+        </a>
+
+      }
+
+    </nav>
+
+  </aside>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

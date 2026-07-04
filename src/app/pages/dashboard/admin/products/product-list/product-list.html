@@ -1,0 +1,290 @@
+<div class="card">
+
+    <!-- Toolbar -->
+
+    <div class="toolbar">
+
+        <div>
+
+            <h2>Products</h2>
+
+            <small>Manage your products</small>
+
+        </div>
+
+        <div class="toolbar-right">
+
+            <input
+                pInputText
+                type="text"
+                placeholder="Search by code or product name..."
+                [(ngModel)]="searchText"
+                (input)="search()">
+
+            <button
+                pButton
+                icon="pi pi-plus"
+                label="New Product"
+                (click)="openNew()">
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Table -->
+
+    <p-table
+        [value]="filteredProducts"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[10,20,50]"
+        responsiveLayout="scroll"
+        sortMode="single"
+        styleClass="p-datatable-sm">
+
+        <ng-template pTemplate="header">
+
+            <tr>
+
+                <th pSortableColumn="code">
+                    Code
+                </th>
+
+                <th pSortableColumn="name">
+                    Product
+                </th>
+
+                <th pSortableColumn="cost_price">
+                    Cost Price
+                </th>
+
+                <th pSortableColumn="selling_price">
+                    Selling Price
+                </th>
+
+                <th>
+                    Stock
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th width="150">
+                    Actions
+                </th>
+
+            </tr>
+
+        </ng-template>
+
+        <ng-template
+            pTemplate="body"
+            let-product>
+
+            <tr>
+
+                <td>
+
+                    {{ product.code || '-' }}
+
+                </td>
+
+                <td>
+
+                    <strong>{{ product.name }}</strong>
+
+                </td>
+
+                <td>
+
+                    {{ product.cost_price | currency:'INR':'symbol':'1.2-2' }}
+
+                </td>
+
+                <td>
+
+                    {{ product.selling_price | currency:'INR':'symbol':'1.2-2' }}
+
+                </td>
+
+                <td>
+
+                    {{ product.stock ?? '-' }}
+
+                </td>
+
+                <td>
+
+                    <p-tag
+                        [value]="getStatus(product)"
+                        [severity]="getSeverity(product)">
+                    </p-tag>
+
+                </td>
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        <button
+                            pButton
+                            icon="pi pi-pencil"
+                            severity="warn"
+                            rounded
+                            outlined
+                            (click)="editProduct(product)">
+                        </button>
+
+                        <button
+                            pButton
+                            icon="pi pi-trash"
+                            severity="danger"
+                            rounded
+                            outlined
+                            (click)="deleteProduct(product)">
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+
+            <tr>
+
+                <td colspan="7" style="text-align:center;padding:30px;">
+
+                    No products found.
+
+                </td>
+
+            </tr>
+
+        </ng-template>
+
+    </p-table>
+
+</div>
+
+<!-- Product Dialog -->
+
+<p-dialog
+    [(visible)]="productDialog"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width:'650px' }"
+    [header]="editing ? 'Edit Product' : 'New Product'">
+
+    <form
+        [formGroup]="productForm"
+        class="p-fluid">
+
+        <div class="form-grid">
+
+            <!-- Code -->
+
+            <div class="field">
+
+                <label>Product Code</label>
+
+                <input
+                    pInputText
+                    formControlName="code">
+
+            </div>
+
+            <!-- Name -->
+
+            <div class="field">
+
+                <label>Product Name *</label>
+
+                <input
+                    pInputText
+                    formControlName="name">
+
+                <small
+                    class="p-error"
+                    *ngIf="productForm.get('name')?.invalid &&
+                           productForm.get('name')?.touched">
+
+                    Product name is required.
+
+                </small>
+
+            </div>
+
+            <!-- Cost Price -->
+
+            <div class="field">
+
+                <label>Cost Price *</label>
+
+                <p-inputNumber
+                    formControlName="cost_price"
+                    mode="currency"
+                    currency="INR">
+                </p-inputNumber>
+
+            </div>
+
+            <!-- Selling Price -->
+
+            <div class="field">
+
+                <label>Selling Price *</label>
+
+                <p-inputNumber
+                    formControlName="selling_price"
+                    mode="currency"
+                    currency="INR">
+                </p-inputNumber>
+
+            </div>
+
+            <!-- Active -->
+
+            <div class="field checkbox-field">
+
+                <label>Active</label>
+
+                <p-checkbox
+                    binary="true"
+                    formControlName="active">
+                </p-checkbox>
+
+            </div>
+
+        </div>
+
+    </form>
+
+    <ng-template pTemplate="footer">
+
+        <button
+            pButton
+            label="Cancel"
+            severity="secondary"
+            outlined
+            (click)="productDialog=false">
+        </button>
+
+        <button
+            pButton
+            icon="pi pi-check"
+            [label]="editing ? 'Update' : 'Save'"
+            [disabled]="productForm.invalid"
+            (click)="saveProduct()">
+        </button>
+
+    </ng-template>
+
+</p-dialog>
