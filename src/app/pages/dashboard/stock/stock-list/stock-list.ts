@@ -68,11 +68,7 @@ export class StockListComponent {
 
   stockHistory: StockHistory[] = [];
 
-  products = [
-    { id: 1, name: 'Rice' },
-    { id: 2, name: 'Sugar' },
-    { id: 3, name: 'Oil' },
-  ];
+  products: any[] = [];
 
   adjustmentTypes = [
     { label: 'Increase', value: 'IN' },
@@ -184,15 +180,28 @@ ngOnInit(): void {
       return;
     }
 
-    const payload = this.stockForm.getRawValue();
+    const formData = this.stockForm.getRawValue();
 
-    console.log(payload);
+    const transaction = {
+      product_id: formData.productId,
+      type: 'ADD' as const,
+      quantity: formData.quantity,
+      reference_id: formData.referenceNo || null,
+      remarks: formData.remarks || null,
+    };
 
-    // API Call
-
-    this.showAddStockDialog = false;
-
-    this.loadStocks();
+    this.stockService.addStockTransaction(transaction).subscribe({
+      next: () => {
+        this.stockService.updateProductStock(formData.productId, formData.quantity).subscribe({
+          next: () => {
+            this.showAddStockDialog = false;
+            this.loadStocks();
+          },
+          error: (err) => console.error('Error updating stock:', err),
+        });
+      },
+      error: (err) => console.error('Error adding transaction:', err),
+    });
   }
 
   calculateNewStock(): number {
@@ -235,8 +244,8 @@ ngOnInit(): void {
           console.error(error);
           return;
         }
-debugger;
-        // Map Supabase data to StockItem interface
+
+        // Map Supabase data to StockItem interface and populate products dropdown
         this.stocks = (data ?? []).map((item: any) => ({
           id: item.id,
           productCode: item.code || '-',
@@ -248,6 +257,12 @@ debugger;
           costPrice: item.cost_price || 0,
           sellingPrice: item.selling_price || 0,
           lastUpdated: new Date(item.updated_at || item.created_at),
+        }));
+
+        // Populate products dropdown
+        this.products = (data ?? []).map((item: any) => ({
+          id: item.id,
+          name: item.name,
         }));
       },
 

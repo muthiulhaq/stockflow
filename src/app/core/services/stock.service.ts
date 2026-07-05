@@ -27,5 +27,40 @@ export class StockService {
     );
   }
 
- 
+  // ------------------------
+  // Add Stock Transaction
+  // ------------------------
+
+  addStockTransaction(transaction: StockTransaction) {
+    return from(
+      this.supabase.client
+        .from('stock_transactions')
+        .insert(transaction)
+        .select()
+        .single()
+    );
+  }
+
+  // ------------------------
+  // Update Product Stock
+  // ------------------------
+
+  updateProductStock(productId: number, quantity: number) {
+    return from(
+      this.supabase.client
+        .from('stock_transactions')
+        .select('current_stock')
+        .eq('id', productId)
+        .single()
+        .then((result: any) => {
+          const currentStock = result.data?.current_stock || 0;
+          const newStock = currentStock + quantity;
+
+          return this.supabase.client
+            .from('stock_transactions')
+            .update({ current_stock: newStock })
+            .eq('id', productId);
+        })
+    );
+  }
 }
