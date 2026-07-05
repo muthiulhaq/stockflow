@@ -13,14 +13,8 @@ import { StockService } from '../../../../core/services/stock.service';
 
 interface StockItem {
   id: number;
-  productCode: string;
   productName: string;
-  category: string;
   currentStock: number;
-  unit: string;
-  reorderLevel: number;
-  costPrice: number;
-  sellingPrice: number;
   lastUpdated: Date;
 }
 
@@ -86,14 +80,15 @@ export class StockListComponent {
 
   constructor(
     private fb: FormBuilder,
-    private stockService: StockService
+    private stockService: StockService,
   ) {}
 
-ngOnInit(): void {
-  this.loadStocks();
-  this.initializeForm();
-  this.initializeAdjustmentForm();
-}
+  ngOnInit(): void {
+    this.loadStocks();
+    this.initializeForm();
+    this.initializeAdjustmentForm();
+    this.loadProducts();
+  }
 
   initializeForm(): void {
     this.stockForm = this.fb.group({
@@ -181,13 +176,14 @@ ngOnInit(): void {
     }
 
     const formData = this.stockForm.getRawValue();
-
+    const product = this.products.find((p) => p.id === formData.productId);
     const transaction = {
       product_id: formData.productId,
       type: 'ADD' as const,
       quantity: formData.quantity,
       reference_id: formData.referenceNo || null,
       remarks: formData.remarks || null,
+      name: product?.name || formData.productId, // Use product name if available, otherwise use productId
     };
 
     this.stockService.addStockTransaction(transaction).subscribe({
@@ -222,16 +218,13 @@ ngOnInit(): void {
     return current;
   }
 
-
   openHistoryDialog(stock: StockItem): void {
+    this.selectedProductName = stock.productName;
 
-  this.selectedProductName = stock.productName;
+    this.stockHistory = [];
 
-  this.stockHistory = [];
-
-  this.showHistoryDialog = true;
-}
-
+    this.showHistoryDialog = true;
+  }
 
   loadStocks(): void {
     this.loading = true;
@@ -248,14 +241,8 @@ ngOnInit(): void {
         // Map Supabase data to StockItem interface and populate products dropdown
         this.stocks = (data ?? []).map((item: any) => ({
           id: item.id,
-          productCode: item.code || '-',
           productName: item.name,
-          category: item.category || '-',
-          currentStock: item.current_stock || 0,
-          unit: item.unit || 'KG',
-          reorderLevel: item.minimum_stock || 0,
-          costPrice: item.cost_price || 0,
-          sellingPrice: item.selling_price || 0,
+          currentStock: item.quantity || 0,
           lastUpdated: new Date(item.updated_at || item.created_at),
         }));
 
@@ -273,29 +260,19 @@ ngOnInit(): void {
     });
   }
 
-  getStockValue(stock: StockItem): number {
-    return stock.currentStock * stock.costPrice;
+  loadProducts() {
+    this.stockService.getActiveProducts().subscribe((data) => {
+      this.products = (data.data ?? []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+      }));
+    });
   }
 
-  getSeverity(stock: StockItem): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
-    if (stock.currentStock === 0) {
-      return 'danger';
-    }
-
-    if (stock.currentStock <= stock.reorderLevel) {
-      return 'warn';
-    }
-
-    return 'success';
-  }
 
   getStatus(stock: StockItem): string {
     if (stock.currentStock === 0) {
       return 'Out of Stock';
-    }
-
-    if (stock.currentStock <= stock.reorderLevel) {
-      return 'Low Stock';
     }
 
     return 'In Stock';

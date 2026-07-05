@@ -14,6 +14,20 @@ export class StockService {
     private supabase: SupabaseService
   ) { }
 
+    // ------------------------
+  // Get Stocks (Observable)
+  // ------------------------
+
+getActiveProducts() {
+  return from(
+    this.supabase.client
+      .from('products')
+      .select('*')
+      .eq('active', true)
+      .order('name')
+  );
+}
+
   // ------------------------
   // Get Stocks (Observable)
   // ------------------------
