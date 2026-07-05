@@ -47,7 +47,7 @@ export class DailySalesComponent implements OnInit {
             (sum: number, si: any) => sum + (si.quantity || 0),
             0
           );
-
+debugger
           return {
             id: item.id,
             invoiceNo: item.invoice_no,
@@ -58,6 +58,8 @@ export class DailySalesComponent implements OnInit {
             }),
             itemCount: saleItems.length,
             quantity: totalQuantity,
+            customer_name: item.customer_name,
+            customer_phone: item.customer_phone,
             grandTotal: item.total,
             details: saleItems
           };

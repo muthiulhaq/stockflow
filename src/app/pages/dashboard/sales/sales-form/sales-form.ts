@@ -150,6 +150,8 @@ export class SalesFormComponent implements OnInit {
 
       // Create sale object
       const sale = {
+        customer_name: formData.customerName,
+        customer_phone: formData.customerPhone || null,
         invoice_no: invoiceNo,
         sale_date: today,
         subtotal: this.grandTotal,

@@ -123,6 +123,9 @@ export class SalesService {
           id,
           invoice_no,
           created_at,
+          customer_name,
+          customer_phone,
+          discount,
           total,
           sale_items (
             id,
