@@ -146,27 +146,53 @@ export class StockListComponent {
       return;
     }
 
-    const payload = this.adjustmentForm.getRawValue();
+    const formData = this.adjustmentForm.getRawValue();
 
-    console.log(payload);
+    const quantity = Number(formData.quantity);
 
-    /*
-    API:
-    POST /stock-adjustment
+    const transaction = {
+      product_id: formData.productId,
+      type: formData.adjustmentType === 'IN' ? 'ADD' : 'REMOVE',
+      quantity: formData.adjustmentType === 'IN' ? quantity : -quantity,
+      reference_id: null,
+      remarks: `${formData.reason}${formData.remarks ? ' - ' + formData.remarks : ''}`,
+    };
 
-    {
-      productId,
-      adjustmentType,
-      quantity,
-      reason,
-      transactionDate,
-      remarks
+    // Calculate new stock
+    let newStock = Number(formData.currentStock);
+
+    if (formData.adjustmentType === 'IN') {
+      newStock += quantity;
+    } else {
+      newStock -= quantity;
+
+      if (newStock < 0) {
+        alert('Stock cannot be negative.');
+        return;
+      }
     }
-  */
 
-    this.showAdjustmentDialog = false;
+    // Save transaction
+    this.stockService.addStockTransaction(transaction).subscribe({
+      next: () => {
+        // Update product stock
+        this.stockService.updateProductStock(formData.productId, newStock).subscribe({
+          next: () => {
+            this.showAdjustmentDialog = false;
 
-    this.loadStocks();
+            this.loadStocks();
+          },
+
+          error: (err) => {
+            console.error('Error updating stock:', err);
+          },
+        });
+      },
+
+      error: (err) => {
+        console.error('Error saving transaction:', err);
+      },
+    });
   }
 
   saveStock(): void {
@@ -268,7 +294,6 @@ export class StockListComponent {
       }));
     });
   }
-
 
   getStatus(stock: StockItem): string {
     if (stock.currentStock === 0) {
