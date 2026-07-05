@@ -95,7 +95,7 @@ export class SalesService {
   }
 
   // ------------------------
-  // Get Product by ID
+  // Get Products by ID
   // ------------------------
 
   getProductById(productId: number) {
@@ -105,6 +105,34 @@ export class SalesService {
         .select('*')
         .eq('id', productId)
         .single()
+    );
+  }
+
+  // ------------------------
+  // Get Today's Sales
+  // ------------------------
+
+  getTodaySales() {
+    const today = new Date().toISOString().split('T')[0];
+
+    return from(
+      this.supabase.client
+        .from('sales')
+        .select(
+          `
+          id,
+          invoice_no,
+          created_at,
+          total,
+          sale_items (
+            id,
+            quantity,
+            product_id
+          )
+          `
+        )
+        .eq('sale_date', today)
+        .order('created_at', { ascending: false })
     );
   }
 }

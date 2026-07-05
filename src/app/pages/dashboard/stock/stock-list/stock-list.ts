@@ -145,7 +145,6 @@ export class StockListComponent {
       this.adjustmentForm.markAllAsTouched();
       return;
     }
-debugger
     const formData = this.adjustmentForm.getRawValue();
 
     const quantity = Number(formData.quantity);
