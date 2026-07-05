@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <p-card header="New Sale">
 
   <form [formGroup]="salesForm">
@@ -50,13 +52,28 @@
         class="item-row">
 
         <div>
+          <label class="block mb-2">Product *</label>
+
+          <p-select
+            class="w-full product-select"
+            [options]="products"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select Product"
+            formControlName="productId"
+            (onChange)="onProductChange($index)">
+          </p-select>
+        </div>
+
+        <div>
           <label class="block mb-2">Item Name</label>
 
           <input
             pInputText
             class="w-full"
             placeholder="Item name"
-            formControlName="itemName" />
+            formControlName="itemName"
+            readonly />
         </div>
 
         <div>
@@ -125,6 +142,7 @@
         icon="pi pi-save"
         severity="success"
         styleClass="w-full"
+        [loading]="loading"
         (onClick)="saveSale()">
       </p-button>
     </div>
