@@ -145,7 +145,7 @@ export class StockListComponent {
       this.adjustmentForm.markAllAsTouched();
       return;
     }
-
+debugger
     const formData = this.adjustmentForm.getRawValue();
 
     const quantity = Number(formData.quantity);
@@ -159,12 +159,12 @@ export class StockListComponent {
     };
 
     // Calculate new stock
-    let newStock = Number(formData.currentStock);
+    let newStock = 0;
 
     if (formData.adjustmentType === 'IN') {
-      newStock += quantity;
+      newStock = formData.currentStock + quantity;
     } else {
-      newStock -= quantity;
+      newStock = formData.currentStock - quantity;
 
       if (newStock < 0) {
         alert('Stock cannot be negative.');

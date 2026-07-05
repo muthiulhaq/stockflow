@@ -67,12 +67,12 @@ getActiveProducts() {
         .eq('id', productId)
         .single()
         .then((result: any) => {
-          const currentStock = result.data?.quantity || 0;
-          const newStock = currentStock + quantity;
+          // const currentStock = result.data?.quantity || 0;
+          // const newStock = currentStock + quantity;
 
           return this.supabase.client
             .from('stock_transactions')
-            .update({ quantity: newStock })
+            .update({ quantity: quantity })
             .eq('id', productId);
         })
     );
