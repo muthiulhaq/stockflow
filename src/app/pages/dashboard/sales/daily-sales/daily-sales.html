@@ -120,7 +120,6 @@
     </div>
 
     <h4>Items</h4>
-
     <p-table
       [value]="selectedSaleDetails"
       styleClass="p-datatable-sm">
@@ -129,7 +128,7 @@
         <tr>
           <th>Item</th>
           <th>Qty</th>
-          <th>Unit Price</th>
+          <th>Price</th>
           <th>Total</th>
         </tr>
       </ng-template>
@@ -144,10 +143,10 @@
 
           <td>{{ item.quantity }}</td>
 
-          <td>₹ {{ item.total }}</td>
+          <td>₹ {{ item.price }}</td>
 
           <td>
-            ₹ {{ item.quantity * item.total }}
+            ₹ {{ item.total }}
           </td>
 
         </tr>

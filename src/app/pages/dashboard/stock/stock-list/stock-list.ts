@@ -262,7 +262,6 @@ export class StockListComponent {
           console.error(error);
           return;
         }
-
         // Map Supabase data to StockItem interface and populate products dropdown
         this.stocks = (data ?? []).map((item: any) => ({
           id: item.id,
