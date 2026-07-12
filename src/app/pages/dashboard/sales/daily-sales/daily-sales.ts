@@ -92,7 +92,6 @@ export class DailySalesComponent implements OnInit {
   }
 
   printBill(id:number): void {
-    debugger;
     window.open(`/invoice/${id}`, '_blank');
   }
 }
