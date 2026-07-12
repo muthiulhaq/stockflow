@@ -21,27 +21,20 @@ export interface SaleItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SalesService {
-
   constructor(
     private supabase: SupabaseService,
-    private stockService: StockService
-  ) { }
+    private stockService: StockService,
+  ) {}
 
   // ------------------------
   // Save Sale
   // ------------------------
 
   saveSale(sale: any) {
-    return from(
-      this.supabase.client
-        .from('sales')
-        .insert(sale)
-        .select()
-        .single()
-    );
+    return from(this.supabase.client.from('sales').insert(sale).select().single());
   }
 
   // ------------------------
@@ -49,12 +42,7 @@ export class SalesService {
   // ------------------------
 
   saveSaleItems(items: SaleItem[]) {
-    return from(
-      this.supabase.client
-        .from('sale_items')
-        .insert(items)
-        .select()
-    );
+    return from(this.supabase.client.from('sale_items').insert(items).select());
   }
 
   // ------------------------
@@ -90,7 +78,7 @@ export class SalesService {
         .from('products')
         .select('id, name, selling_price')
         .eq('active', true)
-        .order('name')
+        .order('name'),
     );
   }
 
@@ -99,13 +87,7 @@ export class SalesService {
   // ------------------------
 
   getProductById(productId: number) {
-    return from(
-      this.supabase.client
-        .from('products')
-        .select('*')
-        .eq('id', productId)
-        .single()
-    );
+    return from(this.supabase.client.from('products').select('*').eq('id', productId).single());
   }
 
   // ------------------------
@@ -127,15 +109,56 @@ export class SalesService {
           customer_phone,
           discount,
           total,
+          notes,
           sale_items (
             id,
             quantity,
             product_id
           )
-          `
+          `,
         )
         .eq('sale_date', today)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }),
     );
   }
+
+  //get sales detials for the Dialog
+
+  getSaleItemsBySaleId(saleId: number) {
+    return from(
+      this.supabase.client
+        .from('sale_items')
+        .select(
+          `
+        *,
+        products (
+          id,
+          code,
+          name,
+          selling_price
+        )
+      `,
+        )
+        .eq('sale_id', saleId),
+    );
+  }
+
+  getSaleById(id: number) {
+  return from(
+    this.supabase.client
+      .from('sales')
+      .select(`
+        *,
+        sale_items (
+          *,
+          products (
+            id,
+            name
+          )
+        )
+      `)
+      .eq('id', id)
+      .single()
+  );
+}
 }

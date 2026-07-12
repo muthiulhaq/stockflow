@@ -18,12 +18,11 @@ import { StockComponent } from './pages/dashboard/stock/stock';
 // import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-
   // Default Route
   {
     path: '',
     redirectTo: 'login',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 
   // ==========================
@@ -35,9 +34,9 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        component: LoginComponent
-      }
-    ]
+        component: LoginComponent,
+      },
+    ],
   },
 
   // ==========================
@@ -48,30 +47,36 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     // canActivate: [authGuard],
     children: [
-
       {
         path: 'sales',
-        component: SalesComponent
+        component: SalesComponent,
       },
 
       {
         path: 'purchase',
-        component: PurchaseComponent
+        component: PurchaseComponent,
       },
 
       {
         path: 'reports',
-        component: ReportsComponent
+        component: ReportsComponent,
       },
 
       {
         path: 'stock',
-        component: StockComponent
+        component: StockComponent,
       },
 
       {
         path: 'admin',
-        component: AdminComponent
+        component: AdminComponent,
+      },
+      {
+        path: 'invoice/:id',
+        loadComponent: () =>
+          import('./pages/dashboard/sales/daily-sales/invoice/invoice').then(
+            (m) => m.InvoiceComponent,
+          ),
       },
 
       // Enable after creating pages
@@ -85,8 +90,7 @@ export const routes: Routes = [
       //   path: 'suppliers',
       //   component: SuppliersComponent
       // }
-
-    ]
+    ],
   },
 
   // ==========================
@@ -94,7 +98,6 @@ export const routes: Routes = [
   // ==========================
   {
     path: '**',
-    redirectTo: 'login'
-  }
-
+    redirectTo: 'login',
+  },
 ];

@@ -18,7 +18,6 @@
         <th>Time</th>
         <th>Customer</th>
         <th>Items</th>
-        <th>Qty</th>
         <th>Total</th>
         <th width="120">Action</th>
       </tr>
@@ -46,10 +45,6 @@
           <p-tag
             [value]="sale.itemCount">
           </p-tag>
-        </td>
-
-        <td>
-          {{ sale.quantity }}
         </td>
 
         <td class="amount-column">
@@ -116,25 +111,25 @@
 
     <div class="customer-section">
 
-      <h4>Customer</h4>
+      <strong class="customer_section_title">Customer</strong>
 
-      <div>{{ selectedSale.customerName }}</div>
+      <div>{{ selectedSale.customer_name }}</div>
 
-      <div>{{ selectedSale.customerPhone }}</div>
+      <div>{{ selectedSale.customer_phone }}</div>
 
     </div>
 
     <h4>Items</h4>
 
     <p-table
-      [value]="selectedSale.items"
+      [value]="selectedSaleDetails"
       styleClass="p-datatable-sm">
 
       <ng-template pTemplate="header">
         <tr>
           <th>Item</th>
           <th>Qty</th>
-          <th>Price</th>
+          <th>Unit Price</th>
           <th>Total</th>
         </tr>
       </ng-template>
@@ -145,14 +140,14 @@
 
         <tr>
 
-          <td>{{ item.itemName }}</td>
+          <td>{{ item.products.name }}</td>
 
           <td>{{ item.quantity }}</td>
 
-          <td>₹ {{ item.unitPrice }}</td>
+          <td>₹ {{ item.total }}</td>
 
           <td>
-            ₹ {{ item.quantity * item.unitPrice }}
+            ₹ {{ item.quantity * item.total }}
           </td>
 
         </tr>
@@ -183,8 +178,14 @@
   <ng-template pTemplate="footer">
 
     <p-button
-      label="Close"
+      label="Print Bill"
       severity="secondary"
+      (onClick)="printBill(selectedSale.id)">
+    </p-button>
+
+    <p-button
+      label="Close"
+      severity="primary"
       (onClick)="visible = false">
     </p-button>
 
