@@ -1,0 +1,156 @@
+<div class="invoice-page">
+
+  <div class="invoice" id="print-section">
+
+    <!-- Header -->
+    <div class="header">
+
+      <div>
+        <h1>StockFlow</h1>
+        <p>Inventory & Billing System</p>
+      </div>
+
+      <div class="invoice-title">
+        <h2>INVOICE</h2>
+        <div>{{sales.invoice_no}}</div>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <!-- Company & Customer -->
+    <div class="info-section">
+
+      <div class="company">
+
+        <h4>From</h4>
+
+        <p><strong>Your Shop Name</strong></p>
+        <p>Kerala, India</p>
+        <p>Phone : +91 9876543210</p>
+
+      </div>
+
+      <div class="customer">
+
+        <h4>Bill To</h4>
+
+        <p><strong>{{sales?.customer_name}}</strong></p>
+        <p>{{sales?.customer_phone}}</p>
+
+      </div>
+
+      <div class="dates">
+
+        <table>
+
+          <tr>
+            <td>Date</td>
+            <td>{{sales?.sale_date}}</td>
+          </tr>
+
+          <tr>
+            <td>Time</td>
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <!-- Items -->
+    <table class="items">
+
+      <thead>
+
+        <tr>
+          <th>#</th>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        @for(item of sales.sale_items; track item.id; let i = $index){
+        <tr>
+
+          <td>{{i+1}}</td>
+
+          <td>{{item.products.name}}</td>
+
+          <td>{{item.quantity}}</td>
+
+          <td>₹ {{item.price}}</td>
+
+          <td>₹ {{item.total}}</td>
+
+        </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+    <!-- Totals -->
+
+    <div class="summary">
+
+      <table>
+
+        <tr>
+
+          <td>Subtotal</td>
+
+          <td>₹ {{sales?.subtotal}}</td>
+
+        </tr>
+
+        <tr>
+
+          <td>Discount</td>
+
+          <td>₹ {{sales?.discount}}</td>
+
+        </tr>
+
+        <tr class="grand">
+
+          <td>Grand Total</td>
+
+          <td>₹ {{sales?.total}}</td>
+
+        </tr>
+
+      </table>
+
+    </div>
+
+    @if(sales.notes){
+
+    <div class="notes">
+
+      <h4>Notes</h4>
+
+      <p>{{sales.notes}}</p>
+
+    </div>
+
+    }
+
+    <div class="footer">
+
+      <p>Thank you for your purchase ❤️</p>
+      <small>Powered by StockFlow</small>
+
+    </div>
+
+  </div>
+
+</div>
