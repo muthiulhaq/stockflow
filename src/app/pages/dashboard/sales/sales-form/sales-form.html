@@ -54,15 +54,14 @@
         <div>
           <label class="block mb-2">Product *</label>
 
-          <p-select
-            class="w-full product-select"
-            [options]="products"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select Product"
-            formControlName="productId"
-            (onChange)="onProductChange($index)">
-          </p-select>
+<p-select
+    class="w-full product-select"
+    [options]="products"
+    optionLabel="name"
+    optionValue="id"
+    formControlName="productId"
+    (onChange)="onProductChange($event, $index)">
+</p-select>
         </div>
 
         <div>
@@ -77,7 +76,7 @@
         </div>
 
         <div>
-          <label class="block mb-2">Qty <strong>(Available Stock - 20)</strong></label>
+          <label class="block mb-2">Qty <strong>(Available Stock - {{ availableStocks[$index] ?? 0 }})</strong></label>
 
           <p-inputNumber
             formControlName="quantity"

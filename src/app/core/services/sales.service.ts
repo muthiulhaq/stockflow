@@ -72,15 +72,22 @@ export class SalesService {
   // Get Products
   // ------------------------
 
-  getProducts() {
-    return from(
-      this.supabase.client
-        .from('products')
-        .select('id, name, selling_price')
-        .eq('active', true)
-        .order('name'),
-    );
-  }
+getProducts() {
+  return from(
+    this.supabase.client
+      .from('products')
+      .select(`
+        id,
+        name,
+        selling_price,
+        stock_transactions (
+          quantity
+        )
+      `)
+      .eq('active', true)
+      .order('name')
+  );
+}
 
   // ------------------------
   // Get Products by ID
