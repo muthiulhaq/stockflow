@@ -60,20 +60,21 @@ getActiveProducts() {
   // ------------------------
 
   updateProductStock(productId: number, quantity: number) {
+    debugger
     return from(
       this.supabase.client
         .from('stock_transactions')
         .select('quantity')
-        .eq('id', productId)
+        .eq('product_id', productId)
         .single()
         .then((result: any) => {
-          // const currentStock = result.data?.quantity || 0;
-          // const newStock = currentStock + quantity;
+          const currentStock = result.data?.quantity || 0;
+          const newStock = currentStock + quantity;
 
           return this.supabase.client
             .from('stock_transactions')
-            .update({ quantity: quantity })
-            .eq('id', productId);
+            .update({ quantity: newStock })
+            .eq('product_id', productId);
         })
     );
   }

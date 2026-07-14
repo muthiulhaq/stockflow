@@ -213,7 +213,6 @@ export class SalesFormComponent implements OnInit {
   }
 
   private updateStockForItems(items: any[]): void {
-    debugger
     let completed = 0;
 
     items.forEach((item) => {
