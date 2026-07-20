@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { Avatar } from 'primeng/avatar';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,12 +13,14 @@ import { Avatar } from 'primeng/avatar';
     RouterModule,
     DrawerModule,
     ButtonModule,
-    Avatar
+    Avatar,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })
 export class MainLayoutComponent {
+
+  constructor(private authService: AuthService, private router: Router) {}
 
   sidebarVisible = false;
 
@@ -27,4 +30,9 @@ export class MainLayoutComponent {
   { label: 'Stock', route: '/stock', icon: 'pi pi-cog' },
   { label: 'Admin', route: '/admin', icon: 'pi pi-cog' },
 ];
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

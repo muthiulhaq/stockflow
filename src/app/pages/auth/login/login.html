@@ -1,10 +1,8 @@
-<div
-  class="min-h-screen flex align-items-center justify-content-center p-3"
->
-  <div class="surface-card border-round-3xl shadow-4 w-full md:w-8 lg:w-5 xl:w-4">
-
+<div class="min-h-screen flex align-items-center justify-content-center p-3">
+  <div
+    class="surface-card border-round-3xl shadow-4 w-full md:w-8 lg:w-5 xl:w-4"
+  >
     <div class="p-5">
-
       <div class="text-center mb-5">
         <div
           class="inline-flex align-items-center justify-content-center border-circle mb-3"
@@ -22,67 +20,83 @@
         </p>
       </div>
 
-      <div class="field mb-4">
-        <label class="block mb-2 font-semibold">
-          User Name
-        </label>
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
 
-        <input
-          pInputText
-          type="text"
-          placeholder="Enter user name"
+        <!-- Email -->
+
+        <div class="field mb-4">
+          <label class="block mb-2 font-semibold">
+            Email Address
+          </label>
+
+          <input
+            pInputText
+            type="email"
+            formControlName="email"
+            placeholder="Enter email address"
+            class="w-full"
+          />
+
+          <small
+            class="p-error"
+            *ngIf="email?.touched && email?.invalid"
+          >
+            Please enter a valid email address.
+          </small>
+        </div>
+
+        <!-- Password -->
+
+        <div class="field mb-4">
+          <label class="block mb-2 font-semibold">
+            Password
+          </label>
+
+          <input
+            pInputText
+            type="password"
+            formControlName="password"
+            placeholder="Enter password"
+            class="w-full"
+          />
+
+          <small
+            class="p-error"
+            *ngIf="password?.touched && password?.invalid"
+          >
+            Password is required.
+          </small>
+        </div>
+
+        <!-- Remember -->
+
+        <div class="flex align-items-center mb-4">
+          <p-checkbox
+            binary="true"
+            formControlName="remember"
+          ></p-checkbox>
+
+          <span class="ml-2 text-600">
+            Remember me
+          </span>
+        </div>
+
+        <!-- Button -->
+
+        <button
+          pButton
+          type="submit"
+          label="Sign In"
+          icon="pi pi-sign-in"
           class="w-full"
-        />
-      </div>
+          [loading]="loading"
+        ></button>
 
-      <div class="field mb-4">
-        <label class="block mb-2 font-semibold">
-          Email ID
-        </label>
-
-        <input
-          pInputText
-          type="email"
-          placeholder="Enter email address"
-          class="w-full"
-        />
-      </div>
-
-      <div class="field mb-4">
-        <label class="block mb-2 font-semibold">
-          Password
-        </label>
-
-        <input
-          pInputText
-          type="password"
-          placeholder="Enter password"
-          class="w-full"
-        />
-      </div>
-
-      <div class="flex align-items-center mb-4">
-        <p-checkbox binary="true"></p-checkbox>
-
-        <span class="ml-2 text-600">
-          Remember me
-        </span>
-      </div>
-
-      <button
-        pButton
-        type="button"
-        label="Sign In"
-        icon="pi pi-sign-in"
-        class="w-full login-btn"
-        (click)="login()"
-      ></button>
+      </form>
 
       <div class="text-center mt-4 text-500">
         Manage your stock with confidence
       </div>
-
     </div>
-
   </div>
 </div>

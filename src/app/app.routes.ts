@@ -15,7 +15,7 @@ import { StockComponent } from './pages/dashboard/stock/stock';
 // import { ProductsComponent } from './pages/dashboard/products/products';
 // import { SuppliersComponent } from './pages/dashboard/suppliers/suppliers';
 
-// import { authGuard } from './guards/auth.guard';
+import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   // Default Route
@@ -45,7 +45,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: 'sales',
