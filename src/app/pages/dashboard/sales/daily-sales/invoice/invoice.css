@@ -1,5 +1,5 @@
 body {
-  background: #ececec;
+  background: var(--brand-gray-100);
 }
 
 .invoice-page {
@@ -10,8 +10,8 @@ body {
 
 .invoice {
   width: 900px;
-  background: #fff;
-  color: #222;
+  background: var(--brand-white);
+  color: var(--brand-ink);
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
@@ -25,13 +25,13 @@ body {
 
 .header h1 {
   margin: 0;
-  color: #10b981;
+  color: var(--brand-green);
   font-size: 34px;
 }
 
 .header p {
   margin-top: 5px;
-  color: #777;
+  color: var(--brand-text-muted);
 }
 
 .invoice-title {
@@ -53,7 +53,7 @@ body {
 
 .info-section h4 {
   margin-bottom: 10px;
-  color: #10b981;
+  color: var(--brand-green);
 }
 
 .info-section p {
@@ -71,8 +71,8 @@ body {
 }
 
 .items thead {
-  background: #10b981;
-  color: #fff;
+  background: var(--brand-green);
+  color: var(--brand-white);
 }
 
 .items th {
@@ -82,11 +82,11 @@ body {
 
 .items td {
   padding: 12px 14px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--brand-border);
 }
 
 .items tbody tr:nth-child(even) {
-  background: #fafafa;
+  background: var(--brand-gray-50);
 }
 
 .summary {
@@ -106,22 +106,22 @@ body {
 .summary .grand {
   font-size: 22px;
   font-weight: bold;
-  color: #10b981;
-  border-top: 2px solid #10b981;
+  color: var(--brand-green);
+  border-top: 2px solid var(--brand-green);
 }
 
 .notes {
   margin-top: 35px;
   padding: 20px;
-  background: #f8f8f8;
-  border-left: 5px solid #10b981;
+  background: var(--brand-gray-50);
+  border-left: 5px solid var(--brand-green);
   border-radius: 6px;
 }
 
 .footer {
   margin-top: 60px;
   text-align: center;
-  color: #666;
+  color: var(--brand-text-muted);
 }
 
 .footer p {
@@ -131,7 +131,7 @@ body {
 
 @media print {
   body {
-    background: white;
+    background: var(--brand-white);
   }
 
   .invoice {

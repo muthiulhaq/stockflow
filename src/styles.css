@@ -3,32 +3,122 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "primeicons/primeicons.css";
 
+/* =====================================================================
+   BRAND PALETTE — green, black & white
+   The single source of truth for colour in the app. PrimeNG components
+   are themed separately in src/app/core/theme/stockflow-preset.ts using
+   the same values; change both together.
+   ===================================================================== */
+:root {
+  /* Green */
+  --brand-green-50: #f0fdf4;
+  --brand-green-100: #dcfce7;
+  --brand-green-200: #bbf7d0;
+  --brand-green-400: #4ade80;
+  --brand-green-500: #22c55e;
+  --brand-green: #16a34a;
+  --brand-green-700: #15803d;
+  --brand-green-800: #166534;
+
+  /* Black -> white */
+  --brand-black: #09090b;
+  --brand-ink: #18181b;
+  --brand-ink-soft: #27272a;
+  --brand-gray-500: #71717a;
+  --brand-gray-300: #d4d4d8;
+  --brand-gray-200: #e4e4e7;
+  --brand-gray-100: #f4f4f5;
+  --brand-gray-50: #fafafa;
+  --brand-white: #ffffff;
+
+  /* Roles */
+  --brand-page-bg: var(--brand-gray-50);
+  --brand-card-bg: var(--brand-white);
+  --brand-border: var(--brand-gray-200);
+  --brand-text: var(--brand-ink);
+  --brand-text-muted: var(--brand-gray-500);
+  --brand-on-dark: var(--brand-white);
+
+  --brand-radius: 12px;
+  --brand-shadow: 0 1px 2px rgba(9, 9, 11, 0.06), 0 4px 16px rgba(9, 9, 11, 0.05);
+}
+
 body {
   font-family: 'Inter', sans-serif;
   margin: 0px !important;
-  background-color: #e8fbef !important;
+  background-color: var(--brand-page-bg) !important;
+  color: var(--brand-text);
 }
 
+/* ================= SURFACES ================= */
 .p-card {
-  background-color: #384049 !important;
+  background-color: var(--brand-card-bg) !important;
+  color: var(--brand-text);
   margin: 1rem;
-}
-
-.p-inputtext {
-  background-color: #454749 !important;
-}
-
-.p-button-success
- {
-    background: #2aaa8c !important;
-    border: 1px solid #46b79d !important;
-    color: #ffffff !important;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
+  box-shadow: var(--brand-shadow);
 }
 
 .p-datatable {
-  background-color: #384049 !important;
+  background-color: var(--brand-card-bg) !important;
 }
 
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--brand-gray-100);
+  color: var(--brand-text);
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.p-datatable .p-datatable-tbody > tr:hover > td {
+  background: var(--brand-green-50);
+}
+
+/* ================= FORMS ================= */
+.p-inputtext {
+  background-color: var(--brand-white) !important;
+  color: var(--brand-text) !important;
+  border-color: var(--brand-gray-300);
+}
+
+.p-inputtext:enabled:focus {
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 2px var(--brand-green-100);
+}
+
+/* ================= BUTTONS ================= */
+.p-button-success {
+  background: var(--brand-green) !important;
+  border: 1px solid var(--brand-green) !important;
+  color: var(--brand-on-dark) !important;
+}
+
+.p-button-success:enabled:hover {
+  background: var(--brand-green-700) !important;
+  border-color: var(--brand-green-700) !important;
+}
+
+/* Neutral (black/white) secondary action */
+.p-button-secondary {
+  background: var(--brand-white) !important;
+  border: 1px solid var(--brand-gray-300) !important;
+  color: var(--brand-ink) !important;
+}
+
+.p-button-secondary:enabled:hover {
+  background: var(--brand-gray-100) !important;
+  border-color: var(--brand-ink) !important;
+}
+
+/* ================= MISC ================= */
 .toolbar h2 {
-  color: #384049;
+  color: var(--brand-ink);
+}
+
+.text-brand-green {
+  color: var(--brand-green);
 }

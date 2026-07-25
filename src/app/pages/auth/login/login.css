@@ -2,27 +2,43 @@
   display: block;
   min-height: 100vh;
 
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #f4fff7 50%,
-    #e8fff0 100%
-  );
+  /* Black canvas with a green wash — the card supplies the white. */
+  background:
+    radial-gradient(circle at 15% 0%, rgba(22, 163, 74, 0.35) 0%, transparent 45%),
+    radial-gradient(circle at 85% 100%, rgba(34, 197, 94, 0.22) 0%, transparent 50%),
+    var(--brand-black);
 }
 
 :host ::ng-deep .login-btn {
-  background: #2aaa8c;
-  border-color: #2aaa8c;
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+  color: var(--brand-white);
 }
 
-:host ::ng-deep .login-btn:hover {
-  background: #20bd5c;
-  border-color: #20bd5c;
+:host ::ng-deep .login-btn:enabled:hover {
+  background: var(--brand-green-700);
+  border-color: var(--brand-green-700);
 }
 
 .surface-card {
   max-width: 450px;
   margin: auto;
+  background: var(--brand-white);
+  border-top: 4px solid var(--brand-green);
+}
+
+.brand-mark {
+  width: 80px;
+  height: 80px;
+  background: var(--brand-green);
+}
+
+.brand-name {
+  color: var(--brand-ink);
+}
+
+.brand-name .accent {
+  color: var(--brand-green);
 }
 
 /* Tablet */

@@ -12,12 +12,12 @@
 
 .sales-grid-header h2 {
   margin: 0;
-  color: #128c7e;
+  color: var(--brand-ink);
 }
 
 .amount-column {
   font-weight: 700;
-  color: #2aaa8c;
+  color: var(--brand-green);
 }
 
 :host ::ng-deep .p-datatable {
@@ -43,26 +43,36 @@
 
 .customer-section {
   padding: 1rem;
-  background: #2aaa8c;
-  border-radius: 12px;
+  background: var(--brand-green-50);
+  border: 1px solid var(--brand-green-200);
+  border-left: 4px solid var(--brand-green);
+  border-radius: var(--brand-radius);
+  color: var(--brand-ink);
 }
 
 .grand-total {
   text-align: right;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2aaa8c;
+  color: var(--brand-green);
 }
 
 .notes-section {
   padding: 1rem;
-  background: #000000;
-  border-radius: 12px;
+  background: var(--brand-black);
+  border-radius: var(--brand-radius);
+  color: var(--brand-white);
+}
+
+.notes-section h4 {
+  margin-top: 0;
+  color: var(--brand-green-400);
 }
 
 .customer_section_title {
   font-size: 1.5rem ;
   display: block;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid var(--brand-green-200);
   margin-bottom: 0.5rem;
+  color: var(--brand-green-800);
 }

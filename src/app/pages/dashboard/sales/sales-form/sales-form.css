@@ -10,10 +10,10 @@
   padding: 1rem;
   margin-bottom: 1rem;
 
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius);
 
-   background-color: #384049 !important;
+  background-color: var(--brand-white);
 }
 
 .subtotal-box {
@@ -25,7 +25,7 @@
 .subtotal {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #2aaa8c;
+  color: var(--brand-green);
 }
 
 .delete-box {
@@ -40,7 +40,7 @@
   font-size: 1.5rem;
   font-weight: 700;
 
-  color: #2aaa8c;
+  color: var(--brand-green);
 }
 
 @media (min-width: 768px) {
@@ -57,10 +57,10 @@
 }
 
 .item-wrapper {
-  background-color: #384049 !important;
+  background-color: var(--brand-white);
 }
 
 .product-select {
-  background-color: #454749 !important;
-  color: #fff !important;
+  background-color: var(--brand-white);
+  color: var(--brand-text);
 }
