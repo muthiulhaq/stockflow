@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
 import { StockService } from '../../../../core/services/stock.service';
 
 interface StockItem {
@@ -42,14 +43,14 @@ interface StockHistory {
     DialogModule,
     InputNumberModule,
     InputTextModule,
+    TextareaModule,
     DatePickerModule,
-    ButtonModule,
     SelectModule,
   ],
   templateUrl: './stock-list.html',
   styleUrl: './stock-list.css',
 })
-export class StockListComponent {
+export class StockListComponent implements OnInit {
   stocks: StockItem[] = [];
   stockForm!: FormGroup;
   adjustmentForm!: FormGroup;
@@ -145,51 +146,26 @@ export class StockListComponent {
       this.adjustmentForm.markAllAsTouched();
       return;
     }
+
     const formData = this.adjustmentForm.getRawValue();
-
     const quantity = Number(formData.quantity);
+    const delta = formData.adjustmentType === 'IN' ? quantity : -quantity;
 
-    const transaction = {
-      product_id: formData.productId,
-      type: formData.adjustmentType === 'IN' ? 'ADD' : 'REMOVE',
-      quantity: formData.adjustmentType === 'IN' ? quantity : -quantity,
-      reference_id: null,
-      remarks: `${formData.reason}${formData.remarks ? ' - ' + formData.remarks : ''}`,
-    };
-
-    // Calculate new stock
-    let newStock = 0;
-
-    if (formData.adjustmentType === 'IN') {
-      newStock = formData.currentStock + quantity;
-    } else {
-      newStock = formData.currentStock - quantity;
-
-      if (newStock < 0) {
-        alert('Stock cannot be negative.');
-        return;
-      }
+    if (formData.adjustmentType === 'OUT' && formData.currentStock - quantity < 0) {
+      alert('Stock cannot be negative.');
+      return;
     }
 
-    // Save transaction
-    this.stockService.addStockTransaction(transaction).subscribe({
+    const product = this.products.find((p) => p.id === formData.productId);
+
+    this.stockService.updateProductStock(formData.productId, delta, product?.name).subscribe({
       next: () => {
-        // Update product stock
-        this.stockService.updateProductStock(formData.productId, newStock).subscribe({
-          next: () => {
-            this.showAdjustmentDialog = false;
-
-            this.loadStocks();
-          },
-
-          error: (err) => {
-            console.error('Error updating stock:', err);
-          },
-        });
+        this.showAdjustmentDialog = false;
+        this.loadStocks();
       },
-
       error: (err) => {
-        console.error('Error saving transaction:', err);
+        console.error('Error updating stock:', err);
+        alert(err?.message || 'Failed to update stock.');
       },
     });
   }
@@ -202,26 +178,17 @@ export class StockListComponent {
 
     const formData = this.stockForm.getRawValue();
     const product = this.products.find((p) => p.id === formData.productId);
-    const transaction = {
-      product_id: formData.productId,
-      type: 'ADD' as const,
-      quantity: formData.quantity,
-      reference_id: formData.referenceNo || null,
-      remarks: formData.remarks || null,
-      name: product?.name || formData.productId, // Use product name if available, otherwise use productId
-    };
+    const quantity = Number(formData.quantity);
 
-    this.stockService.addStockTransaction(transaction).subscribe({
+    this.stockService.updateProductStock(formData.productId, quantity, product?.name).subscribe({
       next: () => {
-        this.stockService.updateProductStock(formData.productId, formData.quantity).subscribe({
-          next: () => {
-            this.showAddStockDialog = false;
-            this.loadStocks();
-          },
-          error: (err) => console.error('Error updating stock:', err),
-        });
+        this.showAddStockDialog = false;
+        this.loadStocks();
       },
-      error: (err) => console.error('Error adding transaction:', err),
+      error: (err) => {
+        console.error('Error updating stock:', err);
+        alert(err?.message || 'Failed to add stock.');
+      },
     });
   }
 
@@ -262,19 +229,8 @@ export class StockListComponent {
           console.error(error);
           return;
         }
-        // Map Supabase data to StockItem interface and populate products dropdown
-        this.stocks = (data ?? []).map((item: any) => ({
-          id: item.id,
-          productName: item.name,
-          currentStock: item.quantity || 0,
-          lastUpdated: new Date(item.updated_at || item.created_at),
-        }));
 
-        // Populate products dropdown
-        this.products = (data ?? []).map((item: any) => ({
-          id: item.id,
-          name: item.name,
-        }));
+        this.stocks = this.mapStockRows(data ?? []);
       },
 
       error: (err) => {
@@ -284,9 +240,37 @@ export class StockListComponent {
     });
   }
 
+  /** One row per product; prefer earliest balance row for that product_id. */
+  private mapStockRows(rows: any[]): StockItem[] {
+    const byProduct = new Map<number, StockItem>();
+
+    for (const item of rows) {
+      const productId = item.product_id ?? item.id;
+      if (productId == null || byProduct.has(productId)) {
+        continue;
+      }
+
+      byProduct.set(productId, {
+        id: productId,
+        productName: item.name || `Product #${productId}`,
+        currentStock: Number(item.quantity) || 0,
+        lastUpdated: new Date(item.created_at),
+      });
+    }
+
+    return Array.from(byProduct.values()).sort((a, b) =>
+      (a.productName || '').localeCompare(b.productName || ''),
+    );
+  }
+
   loadProducts() {
-    this.stockService.getActiveProducts().subscribe((data) => {
-      this.products = (data.data ?? []).map((item: any) => ({
+    this.stockService.getActiveProducts().subscribe(({ data, error }) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      this.products = (data ?? []).map((item: any) => ({
         id: item.id,
         name: item.name,
       }));
