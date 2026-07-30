@@ -1,1 +1,175 @@
-<p>reports works!</p>
+<div class="reports-page">
+
+  <div class="toolbar">
+    <div>
+      <h2>Sales Report</h2>
+      <p class="subtitle">Revenue, invoices, and top products for the selected period</p>
+    </div>
+
+    <div class="filters">
+      <div class="presets">
+        <p-button label="7 days" size="small" severity="secondary" (onClick)="applyPreset(7)" />
+        <p-button label="30 days" size="small" severity="secondary" (onClick)="applyPreset(30)" />
+        <p-button label="Today" size="small" severity="secondary" (onClick)="applyPreset(1)" />
+      </div>
+
+      <div class="date-fields">
+        <p-datepicker
+          [(ngModel)]="fromDate"
+          dateFormat="dd M yy"
+          placeholder="From"
+          [showIcon]="true">
+        </p-datepicker>
+
+        <p-datepicker
+          [(ngModel)]="toDate"
+          dateFormat="dd M yy"
+          placeholder="To"
+          [showIcon]="true">
+        </p-datepicker>
+
+        <p-button
+          label="Apply"
+          icon="pi pi-filter"
+          severity="success"
+          [loading]="loading"
+          (onClick)="loadReport()">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="metric">
+      <span class="metric-label">Revenue</span>
+      <span class="metric-value">₹ {{ summary.revenue | number:'1.0-0' }}</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Invoices</span>
+      <span class="metric-value">{{ summary.invoiceCount }}</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Items sold</span>
+      <span class="metric-value">{{ summary.itemsSold }}</span>
+    </div>
+    <div class="metric">
+      <span class="metric-label">Avg. ticket</span>
+      <span class="metric-value">₹ {{ summary.avgTicket | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+  <div class="panels">
+    <section class="panel trend-panel">
+      <div class="panel-header">
+        <h3>Daily revenue</h3>
+        <span class="panel-hint">{{ dailyTrend.length }} days</span>
+      </div>
+
+      @if (dailyTrend.length) {
+        <div class="trend-chart" [class.is-loading]="loading">
+          @for (day of dailyTrend; track day.date) {
+            <div class="trend-bar-wrap" [pTooltip]="dayTooltip(day)">
+              <div class="trend-bar" [style.height.%]="day.heightPct"></div>
+              <span class="trend-label">{{ day.label }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">No sales in this range.</p>
+      }
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h3>Top products</h3>
+        <span class="panel-hint">By revenue</span>
+      </div>
+
+      <p-table
+        [value]="topProducts"
+        [loading]="loading"
+        [paginator]="topProducts.length > 5"
+        [rows]="5"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-sm">
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Revenue</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>
+              <div class="product-cell">
+                <strong>{{ product.name }}</strong>
+                <span class="muted">{{ product.code }}</span>
+              </div>
+            </td>
+            <td>
+              <p-tag [value]="product.quantity"></p-tag>
+            </td>
+            <td class="amount-column">₹ {{ product.revenue | number:'1.0-0' }}</td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No product sales in this range.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+  </div>
+
+  <section class="panel sales-panel">
+    <div class="panel-header">
+      <h3>Invoices</h3>
+      <span class="panel-hint">{{ sales.length }} records</span>
+    </div>
+
+    <p-table
+      [value]="sales"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Invoice</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Discount</th>
+          <th>Total</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-sale>
+        <tr>
+          <td><strong>{{ sale.invoiceNo }}</strong></td>
+          <td>{{ sale.saleDate }} · {{ sale.time }}</td>
+          <td>{{ sale.customerName }} | {{ sale.customerPhone }}</td>
+          <td>
+            <p-tag [value]="sale.itemCount + ' / ' + sale.quantity"></p-tag>
+          </td>
+          <td>₹ {{ sale.discount | number:'1.0-0' }}</td>
+          <td class="amount-column">₹ {{ sale.grandTotal | number:'1.0-0' }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">No invoices found for the selected dates.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+</div>

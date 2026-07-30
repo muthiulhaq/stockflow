@@ -168,4 +168,45 @@ getProducts() {
       .single()
   );
 }
+
+  // ------------------------
+  // Sales report by date range
+  // ------------------------
+
+  getSalesByDateRange(fromDate: string, toDate: string) {
+    return from(
+      this.supabase.client
+        .from('sales')
+        .select(
+          `
+          id,
+          invoice_no,
+          sale_date,
+          created_at,
+          customer_name,
+          customer_phone,
+          subtotal,
+          discount,
+          total,
+          notes,
+          sale_items (
+            id,
+            quantity,
+            price,
+            total,
+            product_id,
+            products (
+              id,
+              name,
+              code
+            )
+          )
+          `,
+        )
+        .gte('sale_date', fromDate)
+        .lte('sale_date', toDate)
+        .order('sale_date', { ascending: false })
+        .order('created_at', { ascending: false }),
+    );
+  }
 }
