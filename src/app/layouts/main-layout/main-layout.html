@@ -23,9 +23,6 @@
 
     <div class="sidebar-logo">
       <img [src]="tenantLogo" [alt]="tenantName || 'Logo'" width="120"/>
-      @if (tenantName) {
-        <div class="tenant-name">{{ tenantName }}</div>
-      }
     </div>
 
     <nav class="mobile-menu">
@@ -45,6 +42,21 @@
 
       }
 
+      <button
+        class="p-ripple p-button p-button-success p-component w-full logout-btn"
+        (click)="logout(); sidebarVisible = false">
+        Log Out
+      </button>
+
+      <div class="login-info">
+        @if (tenantName) {
+          <div class="tenant-name">{{ tenantName }}</div>
+        }
+        @if (userName) {
+          <div class="user-name">{{ userName }}</div>
+        }
+      </div>
+
     </nav>
 
   </p-drawer>
@@ -54,12 +66,6 @@
 
     <div class="sidebar-logo">
       <img [src]="tenantLogo" [alt]="tenantName || 'Logo'" width="200" />
-      @if (tenantName) {
-        <div class="tenant-name">{{ tenantName }}</div>
-      }
-      @if (userName) {
-        <div class="user-name">{{ userName }}</div>
-      }
     </div>
 
     <nav class="desktop-menu">
@@ -78,6 +84,15 @@
 
       }
       <button class="p-ripple p-button p-button-success p-component w-full logout-btn" (click)="logout()">Log Out</button>
+
+      <div class="login-info">
+        @if (tenantName) {
+          <div class="tenant-name">{{ tenantName }}</div>
+        }
+        @if (userName) {
+          <div class="user-name">{{ userName }}</div>
+        }
+      </div>
     </nav>
 
   </aside>

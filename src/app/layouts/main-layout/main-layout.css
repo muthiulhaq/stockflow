@@ -108,6 +108,12 @@ body {
   padding: 10px 0;
 }
 
+.login-info {
+  margin-top: 1rem;
+  padding: 0 0.5rem 1rem;
+  text-align: center;
+}
+
 .tenant-name {
   margin-top: 0.65rem;
   font-size: 0.95rem;
@@ -132,5 +138,5 @@ body {
 
 .logout-btn {
   margin-top: 1rem;
-  background: none;
+  background: none !important;
 }
