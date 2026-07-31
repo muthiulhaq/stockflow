@@ -98,11 +98,11 @@ getProducts() {
   }
 
   // ------------------------
-  // Get Today's Sales
+  // Get Sales by Date (defaults to today)
   // ------------------------
 
-  getTodaySales() {
-    const today = new Date().toISOString().split('T')[0];
+  getTodaySales(date?: string) {
+    const saleDate = date ?? this.toLocalDateString(new Date());
 
     return from(
       this.supabase.client
@@ -112,6 +112,7 @@ getProducts() {
           id,
           invoice_no,
           created_at,
+          sale_date,
           customer_name,
           customer_phone,
           discount,
@@ -124,9 +125,16 @@ getProducts() {
           )
           `,
         )
-        .eq('sale_date', today)
+        .eq('sale_date', saleDate)
         .order('created_at', { ascending: false }),
     );
+  }
+
+  private toLocalDateString(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   //get sales detials for the Dialog

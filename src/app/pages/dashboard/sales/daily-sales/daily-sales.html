@@ -1,7 +1,19 @@
 <div class="sales-grid-container">
 
   <div class="sales-grid-header">
-    <h2>Today's Sales</h2>
+    <h2>{{ salesHeading }}</h2>
+
+    <p-datepicker
+      [(ngModel)]="selectedDate"
+      dateFormat="dd M yy"
+      [showIcon]="true"
+      iconDisplay="input"
+      [maxDate]="today"
+      [readonlyInput]="true"
+      placeholder="Select date"
+      styleClass="sales-date-filter"
+      (onSelect)="onDateChange()">
+    </p-datepicker>
   </div>
 
   <p-table
@@ -69,7 +81,7 @@
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="7">
-          No sales found today.
+          {{ emptyMessage }}
         </td>
       </tr>
     </ng-template>

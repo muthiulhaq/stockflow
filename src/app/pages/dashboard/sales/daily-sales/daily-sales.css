@@ -5,14 +5,32 @@
 
 .sales-grid-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .sales-grid-header h2 {
   margin: 0;
   color: var(--brand-ink);
+  line-height: 1.2;
+}
+
+:host ::ng-deep .sales-date-filter {
+  width: 10.5rem;
+}
+
+:host ::ng-deep .sales-date-filter .p-inputtext {
+  width: 100%;
+  padding-right: 2.5rem;
+  font-size: 0.9rem;
+}
+
+:host ::ng-deep .sales-date-filter .p-datepicker-input-icon-container,
+:host ::ng-deep .sales-date-filter .p-inputicon {
+  right: 0.65rem;
 }
 
 .amount-column {
