@@ -11,7 +11,7 @@
     </p-button>
 
     <div class="logo">
-      <img src="/images/imobile.png" width="120"/>
+      <img [src]="tenantLogo" [alt]="tenantName || 'Logo'" width="120"/>
     </div>
 
   </header>
@@ -22,7 +22,10 @@
     position="left">
 
     <div class="sidebar-logo">
-      <img src="/images/imobile.png" width="120"/>
+      <img [src]="tenantLogo" [alt]="tenantName || 'Logo'" width="120"/>
+      @if (tenantName) {
+        <div class="tenant-name">{{ tenantName }}</div>
+      }
     </div>
 
     <nav class="mobile-menu">
@@ -50,7 +53,13 @@
   <aside class="sidebar">
 
     <div class="sidebar-logo">
-      <img src="/images/imobile.png" width="200" />
+      <img [src]="tenantLogo" [alt]="tenantName || 'Logo'" width="200" />
+      @if (tenantName) {
+        <div class="tenant-name">{{ tenantName }}</div>
+      }
+      @if (userName) {
+        <div class="user-name">{{ userName }}</div>
+      }
     </div>
 
     <nav class="desktop-menu">
