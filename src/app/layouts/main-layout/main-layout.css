@@ -108,6 +108,20 @@ body {
   padding: 10px 0;
 }
 
+.tenant-name {
+  margin-top: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--brand-white);
+  letter-spacing: 0.01em;
+}
+
+.user-name {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--brand-gray-300);
+}
+
 /* The logo artwork is not part of the green/black/white palette, so on the
    black sidebar it sits on its own white plate instead of bare. */
 .sidebar-logo img {

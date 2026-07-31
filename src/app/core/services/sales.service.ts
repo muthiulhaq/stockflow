@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from } from 'rxjs';
 import { SupabaseService } from './supabase.service';
+import { TenantService } from './tenant.service';
 import { StockService } from './stock.service';
 
 export interface Sale {
@@ -27,6 +28,7 @@ export class SalesService {
   constructor(
     private supabase: SupabaseService,
     private stockService: StockService,
+    private tenantService: TenantService,
   ) {}
 
   // ------------------------
@@ -34,7 +36,15 @@ export class SalesService {
   // ------------------------
 
   saveSale(sale: any) {
-    return from(this.supabase.client.from('sales').insert(sale).select().single());
+    const tenantId = this.tenantService.requireTenantId();
+
+    return from(
+      this.supabase.client
+        .from('sales')
+        .insert({ ...sale, tenant_id: tenantId })
+        .select()
+        .single(),
+    );
   }
 
   // ------------------------
@@ -42,7 +52,11 @@ export class SalesService {
   // ------------------------
 
   saveSaleItems(items: SaleItem[]) {
-    return from(this.supabase.client.from('sale_items').insert(items).select());
+    const tenantId = this.tenantService.requireTenantId();
+
+    const rows = items.map((item) => ({ ...item, tenant_id: tenantId }));
+
+    return from(this.supabase.client.from('sale_items').insert(rows).select());
   }
 
   // ------------------------
@@ -50,13 +64,16 @@ export class SalesService {
   // ------------------------
 
   async generateInvoiceNo(): Promise<string> {
+    const tenantId = this.tenantService.requireTenantId();
     const today = new Date();
     const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+    const saleDate = today.toISOString().slice(0, 10);
 
     const { data, error } = await this.supabase.client
       .from('sales')
       .select('id', { count: 'exact' })
-      .eq('sale_date', today.toISOString().slice(0, 10));
+      .eq('sale_date', saleDate)
+      .eq('tenant_id', tenantId);
 
     if (error) {
       throw error;
@@ -72,29 +89,43 @@ export class SalesService {
   // Get Products
   // ------------------------
 
-getProducts() {
-  return from(
-    this.supabase.client
-      .from('products')
-      .select(`
+  getProducts() {
+    const tenantId = this.tenantService.requireTenantId();
+
+    return from(
+      this.supabase.client
+        .from('products')
+        .select(
+          `
         id,
         name,
         selling_price,
         stock_transactions (
           quantity
         )
-      `)
-      .eq('active', true)
-      .order('name')
-  );
-}
+      `,
+        )
+        .eq('active', true)
+        .eq('tenant_id', tenantId)
+        .order('name'),
+    );
+  }
 
   // ------------------------
   // Get Products by ID
   // ------------------------
 
   getProductById(productId: number) {
-    return from(this.supabase.client.from('products').select('*').eq('id', productId).single());
+    const tenantId = this.tenantService.requireTenantId();
+
+    return from(
+      this.supabase.client
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .eq('tenant_id', tenantId)
+        .single(),
+    );
   }
 
   // ------------------------
@@ -102,6 +133,7 @@ getProducts() {
   // ------------------------
 
   getTodaySales(date?: string) {
+    const tenantId = this.tenantService.requireTenantId();
     const saleDate = date ?? this.toLocalDateString(new Date());
 
     return from(
@@ -126,6 +158,7 @@ getProducts() {
           `,
         )
         .eq('sale_date', saleDate)
+        .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false }),
     );
   }
@@ -140,6 +173,8 @@ getProducts() {
   //get sales detials for the Dialog
 
   getSaleItemsBySaleId(saleId: number) {
+    const tenantId = this.tenantService.requireTenantId();
+
     return from(
       this.supabase.client
         .from('sale_items')
@@ -154,15 +189,19 @@ getProducts() {
         )
       `,
         )
-        .eq('sale_id', saleId),
+        .eq('sale_id', saleId)
+        .eq('tenant_id', tenantId),
     );
   }
 
   getSaleById(id: number) {
-  return from(
-    this.supabase.client
-      .from('sales')
-      .select(`
+    const tenantId = this.tenantService.requireTenantId();
+
+    return from(
+      this.supabase.client
+        .from('sales')
+        .select(
+          `
         *,
         sale_items (
           *,
@@ -171,17 +210,21 @@ getProducts() {
             name
           )
         )
-      `)
-      .eq('id', id)
-      .single()
-  );
-}
+      `,
+        )
+        .eq('id', id)
+        .eq('tenant_id', tenantId)
+        .single(),
+    );
+  }
 
   // ------------------------
   // Sales report by date range
   // ------------------------
 
   getSalesByDateRange(fromDate: string, toDate: string) {
+    const tenantId = this.tenantService.requireTenantId();
+
     return from(
       this.supabase.client
         .from('sales')
@@ -211,6 +254,7 @@ getProducts() {
           )
           `,
         )
+        .eq('tenant_id', tenantId)
         .gte('sale_date', fromDate)
         .lte('sale_date', toDate)
         .order('sale_date', { ascending: false })
