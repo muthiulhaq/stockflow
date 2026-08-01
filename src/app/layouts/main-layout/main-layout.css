@@ -83,21 +83,6 @@ body {
   font-weight: 600;
 }
 
-/* The drawer is the sidebar on mobile — same black/green treatment. */
-:host ::ng-deep .p-drawer {
-  background: var(--brand-black);
-  color: var(--brand-gray-300);
-}
-
-:host ::ng-deep .p-drawer .p-drawer-header,
-:host ::ng-deep .p-drawer .p-drawer-content {
-  background: var(--brand-black);
-}
-
-:host ::ng-deep .p-drawer .p-drawer-close-button {
-  color: var(--brand-gray-300);
-}
-
 .logo {
   color: var(--brand-green);
 }

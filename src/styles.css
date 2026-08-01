@@ -114,6 +114,25 @@ body {
   border-color: var(--brand-ink) !important;
 }
 
+/* ================= MOBILE DRAWER ================= */
+/* Drawer appends to body, so styles must be global (not component-scoped). */
+.p-drawer.mobile-drawer {
+  --p-drawer-background: var(--brand-black);
+  --p-drawer-color: var(--brand-gray-300);
+  --p-drawer-border-color: var(--brand-ink-soft);
+  background: var(--brand-black) !important;
+  color: var(--brand-gray-300) !important;
+}
+
+.p-drawer.mobile-drawer .p-drawer-header,
+.p-drawer.mobile-drawer .p-drawer-content {
+  background: var(--brand-black) !important;
+}
+
+.p-drawer.mobile-drawer .p-drawer-close-button {
+  color: var(--brand-gray-300) !important;
+}
+
 /* ================= MISC ================= */
 .toolbar h2 {
   color: var(--brand-ink);
