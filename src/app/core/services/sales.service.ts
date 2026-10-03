@@ -312,7 +312,8 @@ export class SalesService {
             products (
               id,
               name,
-              code
+              code,
+              cost_price
             )
           )
           `,

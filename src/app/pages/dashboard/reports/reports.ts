@@ -43,6 +43,7 @@ interface DailyTrend {
 interface ReportSummary {
   invoiceCount: number;
   revenue: number;
+  profit: number;
   itemsSold: number;
   avgTicket: number;
   discountTotal: number;
@@ -75,6 +76,7 @@ export class ReportsComponent implements OnInit {
   summary: ReportSummary = {
     invoiceCount: 0,
     revenue: 0,
+    profit: 0,
     itemsSold: 0,
     avgTicket: 0,
     discountTotal: 0,
@@ -136,6 +138,7 @@ export class ReportsComponent implements OnInit {
     const dailyMap = new Map<string, { total: number; invoiceCount: number }>();
 
     let revenue = 0;
+    let profit = 0;
     let itemsSold = 0;
     let discountTotal = 0;
 
@@ -149,6 +152,13 @@ export class ReportsComponent implements OnInit {
       revenue += Number(item.total) || 0;
       discountTotal += Number(item.discount) || 0;
       itemsSold += quantity;
+
+      const costOfGoods = saleItems.reduce((sum: number, si: any) => {
+        const qty = Number(si.quantity) || 0;
+        const cost = Number(si.products?.cost_price) || 0;
+        return sum + qty * cost;
+      }, 0);
+      profit += (Number(item.total) || 0) - costOfGoods;
 
       const dayKey = item.sale_date;
       const dayEntry = dailyMap.get(dayKey) ?? { total: 0, invoiceCount: 0 };
@@ -200,6 +210,7 @@ export class ReportsComponent implements OnInit {
     this.summary = {
       invoiceCount,
       revenue,
+      profit,
       itemsSold,
       avgTicket: invoiceCount ? revenue / invoiceCount : 0,
       discountTotal,
@@ -251,6 +262,7 @@ export class ReportsComponent implements OnInit {
     this.summary = {
       invoiceCount: 0,
       revenue: 0,
+      profit: 0,
       itemsSold: 0,
       avgTicket: 0,
       discountTotal: 0,

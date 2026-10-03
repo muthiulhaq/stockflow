@@ -43,7 +43,7 @@ export class SalesFormComponent implements OnInit {
   availableStocks: number[] = [];
 
   salesForm = this.fb.group({
-    customerName: ['', Validators.required],
+    customerName: [''],
     customerPhone: [''],
     notes: [''],
     items: this.fb.array([this.createItem()]),
@@ -131,12 +131,12 @@ onProductChange(event: any, index: number): void {
 }
 
   async saveSale(): Promise<void> {
-    if (this.salesForm.invalid) {
-      this.salesForm.markAllAsTouched();
+    if (this.items.length === 0 || this.items.invalid) {
+      this.items.markAllAsTouched();
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation Error',
-        detail: 'Please fill all required fields',
+        detail: 'Add at least one item with product, quantity, and price',
       });
       return;
     }
@@ -152,8 +152,8 @@ onProductChange(event: any, index: number): void {
 
       // Create sale object
       const sale = {
-        customer_name: formData.customerName,
-        customer_phone: formData.customerPhone || null,
+        customer_name: formData.customerName?.trim() || 'Unknow customer',
+        customer_phone: formData.customerPhone?.trim() || 'Unknow phone number',
         invoice_no: invoiceNo,
         sale_date: today,
         subtotal: this.grandTotal,
