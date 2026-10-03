@@ -18,6 +18,22 @@ export class TenantService {
     return this.profileSignal()?.tenant_id ?? null;
   }
 
+  get role(): string | null {
+    return this.profileSignal()?.role ?? null;
+  }
+
+  hasRole(...roles: string[]): boolean {
+    const current = this.role?.trim().toLowerCase();
+    if (!current) {
+      return false;
+    }
+    return roles.some((role) => role.trim().toLowerCase() === current);
+  }
+
+  isManager(): boolean {
+    return this.hasRole('Manager');
+  }
+
   /** Throws if tenant context is missing — use in data services. */
   requireTenantId(): string {
     const id = this.tenantId;
