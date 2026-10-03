@@ -6,9 +6,11 @@ export interface Tenant {
   created_at?: string;
 }
 
+export type UserRole = 'User' | 'Manager';
+
 export interface UserProfile {
   id: string;
-  role: string;
+  role: UserRole | string;
   full_name: string | null;
   tenant_id: string;
   created_at?: string;

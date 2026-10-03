@@ -16,6 +16,7 @@ import { StockComponent } from './pages/dashboard/stock/stock';
 // import { SuppliersComponent } from './pages/dashboard/suppliers/suppliers';
 
 import { authGuard } from './guards/auth-guard';
+import { roleGuard } from './guards/role-guard';
 
 export const routes: Routes = [
   // Default Route
@@ -60,6 +61,8 @@ export const routes: Routes = [
       {
         path: 'reports',
         component: ReportsComponent,
+        canActivate: [roleGuard],
+        data: { roles: ['Manager'] },
       },
 
       {

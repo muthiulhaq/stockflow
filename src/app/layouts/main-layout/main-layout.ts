@@ -23,12 +23,18 @@ export class MainLayoutComponent {
 
   sidebarVisible = false;
 
-  menus = [
+  private readonly allMenus = [
     { label: 'Sales', route: '/sales', icon: 'pi pi-chart-line' },
-    { label: 'Reports', route: '/reports', icon: 'pi pi-chart-bar' },
+    { label: 'Reports', route: '/reports', icon: 'pi pi-chart-bar', roles: ['Manager'] },
     { label: 'Stock', route: '/stock', icon: 'pi pi-cog' },
     { label: 'Admin', route: '/admin', icon: 'pi pi-cog' },
   ];
+
+  get menus() {
+    return this.allMenus.filter(
+      (menu) => !menu.roles?.length || this.tenantService.hasRole(...menu.roles),
+    );
+  }
 
   get tenantName(): string {
     return this.tenantService.tenant()?.name ?? '';
