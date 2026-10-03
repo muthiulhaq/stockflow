@@ -44,11 +44,12 @@ export class SalesService {
 
   saveSale(sale: any) {
     const tenantId = this.tenantService.requireTenantId();
+    const createdBy = this.tenantService.requireUserId();
 
     return from(
       this.supabase.client
         .from('sales')
-        .insert({ ...sale, tenant_id: tenantId })
+        .insert({ ...sale, tenant_id: tenantId, created_by: createdBy })
         .select()
         .single(),
     );
@@ -60,8 +61,13 @@ export class SalesService {
 
   saveSaleItems(items: SaleItem[]) {
     const tenantId = this.tenantService.requireTenantId();
+    const createdBy = this.tenantService.requireUserId();
 
-    const rows = items.map((item) => ({ ...item, tenant_id: tenantId }));
+    const rows = items.map((item) => ({
+      ...item,
+      tenant_id: tenantId,
+      created_by: createdBy,
+    }));
 
     return from(this.supabase.client.from('sale_items').insert(rows).select());
   }

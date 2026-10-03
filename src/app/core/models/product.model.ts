@@ -7,6 +7,7 @@ export interface Product {
   stock?: number;
   active: boolean;
   tenant_id?: string;
+  created_by?: string;
 }
 
-export type CreateProduct = Omit<Product, 'id' | 'tenant_id'>;
+export type CreateProduct = Omit<Product, 'id' | 'tenant_id' | 'created_by'>;
