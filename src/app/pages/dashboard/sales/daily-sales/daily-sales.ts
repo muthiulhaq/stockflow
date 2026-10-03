@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
 import { TableModule } from 'primeng/table';
@@ -7,6 +8,8 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { SalesService } from '../../../../core/services/sales.service';
 import { InvoiceComponent } from './invoice/invoice';
 
@@ -21,14 +24,21 @@ import { InvoiceComponent } from './invoice/invoice';
     TagModule,
     DialogModule,
     DatePickerModule,
+    ToastModule,
     InvoiceComponent,
   ],
   templateUrl: './daily-sales.html',
   styleUrl: './daily-sales.css',
+  providers: [MessageService],
 })
 export class DailySalesComponent implements OnInit {
+  private salesService = inject(SalesService);
+  private messageService = inject(MessageService);
+  private destroyRef = inject(DestroyRef);
+
   visible = false;
   loading = false;
+  deletingId: number | null = null;
 
   selectedDate: Date = new Date();
   today: Date = new Date();
@@ -36,10 +46,11 @@ export class DailySalesComponent implements OnInit {
   sales: any[] = [];
   selectedSaleDetails: any[] = [];
 
-  constructor(private salesService: SalesService) {}
-
   ngOnInit(): void {
     this.loadSales();
+    this.salesService.salesChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.loadSales();
+    });
   }
 
   get salesHeading(): string {
@@ -121,6 +132,40 @@ export class DailySalesComponent implements OnInit {
 
   printBill(id: number): void {
     window.open(`/invoice/${id}`, '_blank');
+  }
+
+  deleteSale(sale: any, event?: Event): void {
+    event?.stopPropagation();
+
+    if (!confirm(`Delete invoice ${sale.invoiceNo}? Stock will be restored.`)) {
+      return;
+    }
+
+    this.deletingId = sale.id;
+
+    this.salesService.deleteSale(sale.id).subscribe({
+      next: () => {
+        this.deletingId = null;
+        if (this.selectedSale?.id === sale.id) {
+          this.visible = false;
+          this.selectedSale = null;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Deleted',
+          detail: `${sale.invoiceNo} deleted and stock restored`,
+        });
+      },
+      error: (err) => {
+        this.deletingId = null;
+        console.error('Error deleting sale:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to delete sale',
+        });
+      },
+    });
   }
 
   private isSelectedToday(): boolean {

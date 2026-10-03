@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
@@ -35,6 +36,7 @@ export class SalesFormComponent implements OnInit {
   private salesService = inject(SalesService);
   private stockService = inject(StockService);
   private messageService = inject(MessageService);
+  private destroyRef = inject(DestroyRef);
 
   products: any[] = [];
   loading = false;
@@ -49,6 +51,9 @@ export class SalesFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    this.salesService.salesChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.loadProducts();
+    });
   }
 
   createItem(): FormGroup {
@@ -174,7 +179,7 @@ onProductChange(event: any, index: number): void {
           // Save sale items
           this.salesService.saveSaleItems(saleItems).subscribe({
             next: () => {
-              // Update stock for each item
+              this.salesService.notifySalesChanged();
               this.updateStockForItems(saleItems);
             },
             error: (err) => {
@@ -227,6 +232,7 @@ onProductChange(event: any, index: number): void {
               detail: 'Sale saved successfully',
             });
             this.resetForm();
+            this.loadProducts();
           }
         },
         error: (err) => {
