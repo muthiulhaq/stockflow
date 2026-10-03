@@ -27,6 +27,15 @@ export class TenantService {
     return id;
   }
 
+  /** Auth user id (same as profiles.id). */
+  requireUserId(): string {
+    const id = this.profileSignal()?.id;
+    if (!id) {
+      throw new Error('Not authenticated. Sign in again.');
+    }
+    return id;
+  }
+
   /**
    * Loads profiles + tenants for the signed-in auth user.
    * Expects a profiles row you created manually (id = auth.users.id).

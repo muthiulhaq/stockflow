@@ -43,11 +43,12 @@ export class StockService {
 
   addStockTransaction(transaction: any) {
     const tenantId = this.tenantService.requireTenantId();
+    const createdBy = this.tenantService.requireUserId();
 
     return from(
       this.supabase.client
         .from('stock_transactions')
-        .insert({ ...transaction, tenant_id: tenantId })
+        .insert({ ...transaction, tenant_id: tenantId, created_by: createdBy })
         .select()
         .single(),
     );
@@ -93,6 +94,7 @@ export class StockService {
           name: productName ?? String(productId),
           remarks: 'Opening balance',
           tenant_id: tenantId,
+          created_by: this.tenantService.requireUserId(),
         })
         .select()
         .single();

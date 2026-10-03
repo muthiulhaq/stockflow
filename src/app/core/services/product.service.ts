@@ -40,11 +40,12 @@ export class ProductService {
 
   addProduct(product: CreateProduct) {
     const tenantId = this.tenantService.requireTenantId();
+    const createdBy = this.tenantService.requireUserId();
 
     return from(
       this.supabaseService.client
         .from('products')
-        .insert({ ...product, tenant_id: tenantId })
+        .insert({ ...product, tenant_id: tenantId, created_by: createdBy })
         .select()
         .single(),
     );
