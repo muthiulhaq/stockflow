@@ -38,6 +38,12 @@
   color: var(--brand-green);
 }
 
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 :host ::ng-deep .p-datatable {
   border-radius: 12px;
   overflow: hidden;

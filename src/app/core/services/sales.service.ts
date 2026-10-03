@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from } from 'rxjs';
+import { firstValueFrom, from, Subject } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { TenantService } from './tenant.service';
 import { StockService } from './stock.service';
@@ -25,11 +25,18 @@ export interface SaleItem {
   providedIn: 'root',
 })
 export class SalesService {
+  private salesChangedSubject = new Subject<void>();
+  readonly salesChanged$ = this.salesChangedSubject.asObservable();
+
   constructor(
     private supabase: SupabaseService,
     private stockService: StockService,
     private tenantService: TenantService,
   ) {}
+
+  notifySalesChanged(): void {
+    this.salesChangedSubject.next();
+  }
 
   // ------------------------
   // Save Sale
@@ -57,6 +64,56 @@ export class SalesService {
     const rows = items.map((item) => ({ ...item, tenant_id: tenantId }));
 
     return from(this.supabase.client.from('sale_items').insert(rows).select());
+  }
+
+  deleteSale(saleId: number) {
+    return from(this.deleteSaleAndRestoreStock(saleId));
+  }
+
+  private async deleteSaleAndRestoreStock(saleId: number) {
+    const tenantId = this.tenantService.requireTenantId();
+
+    const { data: items, error: itemsError } = await this.supabase.client
+      .from('sale_items')
+      .select('product_id, quantity')
+      .eq('sale_id', saleId)
+      .eq('tenant_id', tenantId);
+
+    if (itemsError) {
+      throw itemsError;
+    }
+
+    const { error: deleteItemsError } = await this.supabase.client
+      .from('sale_items')
+      .delete()
+      .eq('sale_id', saleId)
+      .eq('tenant_id', tenantId);
+
+    if (deleteItemsError) {
+      throw deleteItemsError;
+    }
+
+    const { error: deleteSaleError } = await this.supabase.client
+      .from('sales')
+      .delete()
+      .eq('id', saleId)
+      .eq('tenant_id', tenantId);
+
+    if (deleteSaleError) {
+      throw deleteSaleError;
+    }
+
+    for (const item of items ?? []) {
+      const result = await firstValueFrom(
+        this.stockService.updateProductStock(item.product_id, item.quantity),
+      );
+
+      if (result?.error) {
+        throw result.error;
+      }
+    }
+
+    this.notifySalesChanged();
   }
 
   // ------------------------

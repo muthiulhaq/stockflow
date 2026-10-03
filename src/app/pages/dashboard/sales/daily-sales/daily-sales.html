@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <div class="sales-grid-container">
 
   <div class="sales-grid-header">
@@ -31,7 +33,7 @@
         <th>Customer</th>
         <th>Items</th>
         <th>Total</th>
-        <th width="120">Action</th>
+        <th width="160">Action</th>
       </tr>
     </ng-template>
 
@@ -64,14 +66,12 @@
         </td>
 
         <td>
-
           <p-button
             icon="pi pi-eye"
             severity="info"
             [text]="true"
             (onClick)="viewSale(sale)">
           </p-button>
-
         </td>
 
       </tr>
