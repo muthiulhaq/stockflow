@@ -60,7 +60,7 @@
 
     <div formArrayName="items">
 
-      @for(item of items.controls; track $index) {
+      @for (item of items.controls; track item.get('rowId')?.value) {
 
       <div
         [formGroupName]="$index"
@@ -96,6 +96,7 @@
           <p-inputNumber
             formControlName="quantity"
             [min]="1"
+            [inputId]="'qty-' + item.get('rowId')?.value"
             inputStyleClass="w-full">
           </p-inputNumber>
           
@@ -107,6 +108,7 @@
           <p-inputNumber
             formControlName="unitPrice"
             [min]="0"
+            [inputId]="'price-' + item.get('rowId')?.value"
             inputStyleClass="w-full">
           </p-inputNumber>
         </div>
