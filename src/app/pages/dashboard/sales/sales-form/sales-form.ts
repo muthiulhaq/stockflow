@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 
 import { SalesService } from '../../../../core/services/sales.service';
 import { StockService } from '../../../../core/services/stock.service';
+import { PAYMENT_METHOD_OPTIONS } from '../../../../core/models/payment-method';
 
 @Component({
   selector: 'app-sales-form',
@@ -41,10 +42,12 @@ export class SalesFormComponent implements OnInit {
   products: any[] = [];
   loading = false;
   availableStocks: number[] = [];
+  paymentMethods = PAYMENT_METHOD_OPTIONS;
 
   salesForm = this.fb.group({
     customerName: [''],
     customerPhone: [''],
+    paymentMethod: ['Cash', Validators.required],
     notes: [''],
     items: this.fb.array([this.createItem()]),
   });
@@ -160,11 +163,24 @@ onProductChange(event: any, index: number): void {
         discount: 0,
         total: this.grandTotal,
         notes: formData.notes || null,
+        payment_method: formData.paymentMethod || 'Cash',
       };
 
       // Save sale and get ID
       this.salesService.saveSale(sale).subscribe({
         next: async (response: any) => {
+          if (response.error) {
+            this.loading = false;
+            this.availableStocks = [];
+            console.error('Error saving sale:', response.error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: this.saleSaveErrorDetail(response.error),
+            });
+            return;
+          }
+
           const saleId = response.data.id;
 
           // Prepare sale items
@@ -201,7 +217,7 @@ onProductChange(event: any, index: number): void {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to save sale',
+            detail: this.saleSaveErrorDetail(err),
           });
         },
       });
@@ -251,10 +267,19 @@ onProductChange(event: any, index: number): void {
     });
   }
 
+  private saleSaveErrorDetail(err: any): string {
+    const message = String(err?.message ?? err ?? '');
+    if (err?.code === '42703' || message.includes('payment_method')) {
+      return 'Add the payment_method column to the sales table in Supabase, then try again';
+    }
+    return 'Failed to save sale';
+  }
+
   private resetForm(): void {
     this.salesForm.reset({
       customerName: '',
       customerPhone: '',
+      paymentMethod: 'Cash',
       notes: '',
       items: [this.createItem()],
     });

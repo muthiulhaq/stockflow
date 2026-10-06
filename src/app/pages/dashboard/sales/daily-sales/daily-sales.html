@@ -31,6 +31,7 @@
         <th>Invoice</th>
         <th>Time</th>
         <th>Customer</th>
+        <th>Payment</th>
         <th>Items</th>
         <th>Total</th>
         <th width="160">Action</th>
@@ -53,6 +54,10 @@
 
         <td>
           {{ sale.customer_name }} | {{ sale.customer_phone }}
+        </td>
+
+        <td>
+          <p-tag [value]="sale.paymentMethod"></p-tag>
         </td>
 
         <td>
@@ -117,6 +122,11 @@
       <div>
         <strong>Time :</strong>
         {{ selectedSale.time }}
+      </div>
+
+      <div>
+        <strong>Payment :</strong>
+        {{ selectedSale.paymentMethod }}
       </div>
 
     </div>

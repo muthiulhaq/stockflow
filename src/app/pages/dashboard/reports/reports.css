@@ -72,6 +72,19 @@
   color: var(--brand-ink);
 }
 
+.metric-hint {
+  color: var(--brand-text-muted);
+  font-size: 0.75rem;
+}
+
+.payment-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.payment-metric {
+  border-top-color: var(--brand-green-400, #4ade80);
+}
+
 .panels {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -188,6 +201,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .payment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .panels {
     grid-template-columns: 1fr;
   }
@@ -208,5 +225,9 @@
 
   .summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .payment-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

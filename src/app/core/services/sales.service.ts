@@ -11,6 +11,7 @@ export interface Sale {
   discount: number;
   total: number;
   notes?: string;
+  payment_method?: string;
 }
 
 export interface SaleItem {
@@ -213,6 +214,7 @@ export class SalesService {
           discount,
           total,
           notes,
+          payment_method,
           sale_items (
             id,
             quantity,
@@ -303,6 +305,7 @@ export class SalesService {
           discount,
           total,
           notes,
+          payment_method,
           sale_items (
             id,
             quantity,
