@@ -9,6 +9,11 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { SalesService } from '../../../core/services/sales.service';
+import {
+  PAYMENT_METHODS,
+  PaymentMethod,
+  normalizePaymentMethod,
+} from '../../../core/models/payment-method';
 
 interface ReportSale {
   id: number;
@@ -22,6 +27,13 @@ interface ReportSale {
   discount: number;
   grandTotal: number;
   notes?: string;
+  paymentMethod: PaymentMethod;
+}
+
+interface PaymentBreakdown {
+  method: PaymentMethod;
+  total: number;
+  invoiceCount: number;
 }
 
 interface TopProduct {
@@ -73,6 +85,7 @@ export class ReportsComponent implements OnInit {
   sales: ReportSale[] = [];
   topProducts: TopProduct[] = [];
   dailyTrend: DailyTrend[] = [];
+  paymentBreakdown: PaymentBreakdown[] = this.emptyPaymentBreakdown();
   summary: ReportSummary = {
     invoiceCount: 0,
     revenue: 0,
@@ -136,6 +149,9 @@ export class ReportsComponent implements OnInit {
   private buildReport(rows: any[], from: string, to: string): void {
     const productMap = new Map<number, TopProduct>();
     const dailyMap = new Map<string, { total: number; invoiceCount: number }>();
+    const paymentMap = new Map<PaymentMethod, PaymentBreakdown>(
+      PAYMENT_METHODS.map((method) => [method, { method, total: 0, invoiceCount: 0 }]),
+    );
 
     let revenue = 0;
     let profit = 0;
@@ -186,6 +202,13 @@ export class ReportsComponent implements OnInit {
         productMap.set(productId, existing);
       }
 
+      const paymentMethod = normalizePaymentMethod(item.payment_method);
+      const paymentEntry = paymentMap.get(paymentMethod);
+      if (paymentEntry) {
+        paymentEntry.total += Number(item.total) || 0;
+        paymentEntry.invoiceCount += 1;
+      }
+
       return {
         id: item.id,
         invoiceNo: item.invoice_no,
@@ -202,6 +225,7 @@ export class ReportsComponent implements OnInit {
         discount: Number(item.discount) || 0,
         grandTotal: Number(item.total) || 0,
         notes: item.notes,
+        paymentMethod,
       };
     });
 
@@ -219,6 +243,10 @@ export class ReportsComponent implements OnInit {
     this.topProducts = Array.from(productMap.values())
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10);
+
+    this.paymentBreakdown = PAYMENT_METHODS.map(
+      (method) => paymentMap.get(method) ?? { method, total: 0, invoiceCount: 0 },
+    );
 
     this.dailyTrend = this.buildDailyTrend(from, to, dailyMap);
   }
@@ -259,6 +287,7 @@ export class ReportsComponent implements OnInit {
     this.sales = [];
     this.topProducts = [];
     this.dailyTrend = [];
+    this.paymentBreakdown = this.emptyPaymentBreakdown();
     this.summary = {
       invoiceCount: 0,
       revenue: 0,
@@ -267,6 +296,10 @@ export class ReportsComponent implements OnInit {
       avgTicket: 0,
       discountTotal: 0,
     };
+  }
+
+  private emptyPaymentBreakdown(): PaymentBreakdown[] {
+    return PAYMENT_METHODS.map((method) => ({ method, total: 0, invoiceCount: 0 }));
   }
 
   private daysAgo(days: number): Date {

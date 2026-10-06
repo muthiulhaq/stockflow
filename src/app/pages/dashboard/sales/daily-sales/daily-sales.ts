@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { SalesService } from '../../../../core/services/sales.service';
 import { InvoiceComponent } from './invoice/invoice';
+import { normalizePaymentMethod } from '../../../../core/models/payment-method';
 
 @Component({
   selector: 'app-daily-sales',
@@ -102,6 +103,7 @@ export class DailySalesComponent implements OnInit {
             grandTotal: item.total,
             details: saleItems,
             notes: item.notes,
+            paymentMethod: normalizePaymentMethod(item.payment_method),
           };
         });
       },
