@@ -43,6 +43,7 @@ export class SalesFormComponent implements OnInit {
   loading = false;
   availableStocks: number[] = [];
   paymentMethods = PAYMENT_METHOD_OPTIONS;
+  private nextItemRowId = 0;
 
   salesForm = this.fb.group({
     customerName: [''],
@@ -60,12 +61,22 @@ export class SalesFormComponent implements OnInit {
   }
 
   createItem(): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
+      rowId: [this.nextItemRowId++],
       productId: [null, Validators.required],
       itemName: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
     });
+
+    group
+      .get('productId')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((productId) => {
+        this.fillItemFromProduct(group, productId);
+      });
+
+    return group;
   }
 
   get items(): FormArray {
@@ -115,23 +126,42 @@ export class SalesFormComponent implements OnInit {
     });
   }
 
-onProductChange(event: any, index: number): void {
-  const productId = event.value;
-
-  console.log('Selected:', productId);
-
-  const item = this.items.at(index);
-  const product = this.products.find(p => p.id == productId);
-
-  if (product) {
-    item.patchValue({
-      itemName: product.name,
-      unitPrice: product.selling_price
-    });
-
-    this.availableStocks[index] = product.stock;
+  onProductChange(event: any, index: number): void {
+    this.fillItemFromProduct(this.items.at(index) as FormGroup, event.value, index);
   }
-}
+
+  private fillItemFromProduct(item: FormGroup, productId: unknown, index?: number): void {
+    const rowIndex = index ?? this.items.controls.indexOf(item);
+    const product = this.products.find((p) => p.id == productId);
+
+    if (!product) {
+      item.patchValue(
+        {
+          itemName: '',
+          quantity: 1,
+          unitPrice: 0,
+        },
+        { emitEvent: false },
+      );
+      if (rowIndex >= 0) {
+        this.availableStocks[rowIndex] = 0;
+      }
+      return;
+    }
+
+    item.patchValue(
+      {
+        itemName: product.name,
+        unitPrice: product.selling_price,
+      },
+      { emitEvent: false },
+    );
+    item.get('quantity')?.setValue(1, { emitEvent: false });
+
+    if (rowIndex >= 0) {
+      this.availableStocks[rowIndex] = product.stock;
+    }
+  }
 
   async saveSale(): Promise<void> {
     if (this.items.length === 0 || this.items.invalid) {
@@ -276,14 +306,16 @@ onProductChange(event: any, index: number): void {
   }
 
   private resetForm(): void {
-    this.salesForm.reset({
+    this.salesForm.patchValue({
       customerName: '',
       customerPhone: '',
       paymentMethod: 'Cash',
       notes: '',
-      items: [this.createItem()],
     });
     this.items.clear();
     this.items.push(this.createItem());
+    this.availableStocks = [];
+    this.salesForm.markAsPristine();
+    this.salesForm.markAsUntouched();
   }
 }
